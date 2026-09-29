@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 .nohup
 .directory
+
+# GitHub workflow files need the token 'workflow' scope to push;
+# add them via the GitHub web UI instead.
+.github/
