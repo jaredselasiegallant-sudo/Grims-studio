@@ -2,13 +2,13 @@
 
 Static portfolio for **Jared Selasie Gallant / Grims Studio** — *Clear Diagnosis, Clean Cure.*
 
-Built with a tiny Python static generator (no database, no API, no runtime fetch). Content lives in Markdown, output in `dist/` is ready for GitHub Pages.
+Built with a tiny Python static generator (no database, no API, no runtime fetch). Content lives in Markdown, output in `docs/` is ready for GitHub Pages.
 
 ## Quick start
 
 ```bash
 python3 build.py
-python3 -m http.server 8000 --directory dist
+python3 -m http.server 8000 --directory docs
 # open http://localhost:8000
 ```
 
@@ -63,11 +63,11 @@ Rules (per spec):
 
 ## Build / deploy
 
-- Build: `python3 build.py` → `dist/index.html`, `dist/style.css`, `dist/app.js`, `dist/.nojekyll`
-- Local preview: any static server over `dist/`
+- Build: `python3 build.py` → `docs/index.html`, `docs/style.css`, `docs/app.js`, `docs/.nojekyll`
+- Local preview: any static server over `docs/`
 - GitHub Pages:
   1. Push this folder to a repo
-  2. Settings → Pages → Deploy from branch → `main` + `/dist` (or use the `dist/` contents as the Pages root / `gh-pages` branch)
+  2. Settings → Pages → Deploy from branch → `main` + `/docs`
   3. No base-path config needed — all asset links are relative (`./style.css`)
 
 No GitHub API calls at runtime. The app list is only what you maintain in Markdown.
@@ -83,6 +83,6 @@ No GitHub API calls at runtime. The app list is only what you maintain in Markdo
 ## Still needed from you
 
 - [ ] Live URLs + GitHub repo URLs for each app (add `url:` / `repository:` in `content/projects.md` to enable Open app / View source)
-- [ ] Project images (optional — drop in `dist/images/` and set `image:`)
+- [ ] Project images (optional — drop in `docs/images/` and set `image:`)
 - [ ] `[Grims Studio logo]` / `[app store link]` placeholders if you want branding
 - [ ] No metrics, awards, or users invented — add only real ones

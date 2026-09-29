@@ -2,11 +2,11 @@
 """Grims Studio static site builder.
 
 Reads content/profile.md and content/projects.md at build time
-and emits dist/index.html + assets. No database, no API, no runtime fetch.
+and emits docs/index.html + assets. No database, no API, no runtime fetch.
 Suitable for GitHub Pages.
 
 Usage:
-    python3 build.py [--base-path /repo-name] [--out dist]
+    python3 build.py [--base-path /repo-name] [--out docs]
 """
 import argparse
 import html
@@ -382,7 +382,7 @@ def build(out_dir: Path):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="dist")
+    ap.add_argument("--out", default="docs")
     ap.add_argument("--base-path", default="")
     args = ap.parse_args()
     build(ROOT / args.out)
