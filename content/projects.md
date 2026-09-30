@@ -1,5 +1,9 @@
 ## Applications
 
+<!-- Optional keys per app (omit when unknown, never invent URLs):
+     features: a; b; c | url/demo: https://… (Live demo) |
+     repository/github: https://… (GitHub) | download: https://… | image: ./img.webp -->
+
 ## PocketLedger
 
 - status: Active

@@ -1,6 +1,21 @@
-// Grims Studio — search + category filters (progressive enhancement).
-// Works with server-rendered cards. No API, no network.
+// Grims Studio — mobile nav toggle + search/category filters.
+// Progressive enhancement; guards for pages without filter controls.
 (function () {
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.getElementById('primary-nav');
+  if (toggle && nav) {
+    toggle.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('open')) {
+        nav.classList.remove('open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.focus();
+      }
+    });
+  }
   const search = document.getElementById('app-search');
   const buttons = Array.from(document.querySelectorAll('.filter-btn'));
   const cards = Array.from(document.querySelectorAll('.project-card'));

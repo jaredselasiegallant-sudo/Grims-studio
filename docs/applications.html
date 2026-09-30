@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Applications — Grims Studio</title>
+  <meta name="description" content="Browse all Grims Studio applications: offline-first apps, games, and design work by Jared Selasie Gallant." />
+  <meta property="og:title" content="Applications — Grims Studio" />
+  <meta property="og:description" content="Browse all Grims Studio applications: offline-first apps, games, and design work by Jared Selasie Gallant." />
+  <meta property="og:type" content="website" />
+  <!-- TODO: supply an Open Graph preview image as docs/og-preview.png and replace the content below -->
+  <meta property="og:image" content="./og-preview.png" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+    <div class="header-inner">
+      <a class="wordmark" href="./index.html" aria-label="Grims Studio home">
+        <span class="wordmark-mark" aria-hidden="true">GS</span>
+        <span>Grims Studio<small>Clear Diagnosis, Clean Cure.</small></span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu">
+        <span aria-hidden="true">☰</span>
+      </button>
+      <nav class="site-nav" id="primary-nav" aria-label="Primary">
+        <a href="./index.html">Home</a><a href="./applications.html" class="active" aria-current="page">Applications</a><a href="./about.html">About</a><a href="./about.html#contact" class="nav-cta">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+<section class="block" aria-label="Applications">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Applications</h2>
+          <p>Every app, honestly labeled.</p>
+          <span class="count-pill" id="result-count" aria-live="polite"></span>
+        </div>
+        <div class="controls" role="search">
+          <div class="search-wrap">
+            <label for="app-search">Search apps</label>
+            <input type="search" id="app-search" placeholder="Search apps, categories, tech…" autocomplete="off" />
+          </div>
+          <div class="filter-row" role="group" aria-label="Filter by category">
+            <button class="filter-btn" data-filter="all" aria-pressed="true">All</button><button class="filter-btn" data-filter="Design" aria-pressed="false">Design</button><button class="filter-btn" data-filter="Education" aria-pressed="false">Education</button><button class="filter-btn" data-filter="Games" aria-pressed="false">Games</button><button class="filter-btn" data-filter="Media" aria-pressed="false">Media</button><button class="filter-btn" data-filter="Productivity" aria-pressed="false">Productivity</button>
+          </div>
+          <button class="clear-btn" id="clear-filters" type="button">Clear filters</button>
+        </div>
+        <div class="grid" id="app-grid">
+          
+        <article class="card project-card featured" id="pocketledger" data-category="Productivity" data-search="PocketLedger Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut. Productivity Flutter Dart SQLite  Active">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">PO</div>
+            <h3>PocketLedger</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for PocketLedger">TODO: Add screenshot/mockup for PocketLedger</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">●</span> Active</span><span class="badge cat">Productivity</span></div>
+          <p class="desc">Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut.</p>
+          <div class="tags"><span>Flutter</span><span>Dart</span><span>SQLite</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for PocketLedger</li></ul>
+          
+        </article>
+
+        <article class="card project-card featured" id="project-nexus" data-category="Media" data-search="Project Nexus Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack. Media Rust gtk4-rs Flatpak  Active">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">PN</div>
+            <h3>Project Nexus</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Project Nexus">TODO: Add screenshot/mockup for Project Nexus</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">●</span> Active</span><span class="badge cat">Media</span></div>
+          <p class="desc">Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack.</p>
+          <div class="tags"><span>Rust</span><span>gtk4-rs</span><span>Flatpak</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for Project Nexus</li></ul>
+          
+        </article>
+
+        <article class="card project-card" id="the-pink-whisk" data-category="Design" data-search="The Pink Whisk Commercial bakery website. Full UI design, layout architecture, and deployment strategy including pastry catalog, order/contact form, and custom-pastry photo upload. Design Penpot HTML CSS JavaScript  Completed">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">TP</div>
+            <h3>The Pink Whisk</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for The Pink Whisk">TODO: Add screenshot/mockup for The Pink Whisk</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">✓</span> Completed</span><span class="badge cat">Design</span></div>
+          <p class="desc">Commercial bakery website. Full UI design, layout architecture, and deployment strategy including pastry catalog, order/contact form, and custom-pastry photo upload.</p>
+          <div class="tags"><span>Penpot</span><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for The Pink Whisk</li></ul>
+          
+        </article>
+
+        <article class="card project-card featured" id="grimoire-astral-architect" data-category="Games" data-search="Grimoire: Astral Architect Cozy base-builder / idle RPG. Offline game built with WinUI 3, C#, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub. Games C# WinUI 3 SkiaSharp SQLite  In development">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">GA</div>
+            <h3>Grimoire: Astral Architect</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Grimoire: Astral Architect">TODO: Add screenshot/mockup for Grimoire: Astral Architect</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">◐</span> In development</span><span class="badge cat">Games</span></div>
+          <p class="desc">Cozy base-builder / idle RPG. Offline game built with WinUI 3, C#, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub.</p>
+          <div class="tags"><span>C#</span><span>WinUI 3</span><span>SkiaSharp</span><span>SQLite</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for Grimoire: Astral Architect</li></ul>
+          
+        </article>
+
+        <article class="card project-card" id="artwork-portfolio-app" data-category="Design" data-search="Artwork Portfolio App Flutter gallery app with glassmorphic white/purple design, auth, upload, edit, and cross-platform sync. Design Flutter Dart  Planned">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">AP</div>
+            <h3>Artwork Portfolio App</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Artwork Portfolio App">TODO: Add screenshot/mockup for Artwork Portfolio App</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">○</span> Planned</span><span class="badge cat">Design</span></div>
+          <p class="desc">Flutter gallery app with glassmorphic white/purple design, auth, upload, edit, and cross-platform sync.</p>
+          <div class="tags"><span>Flutter</span><span>Dart</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for Artwork Portfolio App</li></ul>
+          
+        </article>
+
+        <article class="card project-card" id="gamified-book-reader" data-category="Education" data-search="Gamified Book Reader Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader. Education Android  Concept">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">GB</div>
+            <h3>Gamified Book Reader</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Gamified Book Reader">TODO: Add screenshot/mockup for Gamified Book Reader</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">◌</span> Concept</span><span class="badge cat">Education</span></div>
+          <p class="desc">Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader.</p>
+          <div class="tags"><span>Android</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for Gamified Book Reader</li></ul>
+          
+        </article>
+
+        <article class="card project-card" id="personal-ai-assistant" data-category="Productivity" data-search="Personal AI Assistant Linux PC + Android assistant that works with local files, with a growing companion mascot. Productivity Linux Android  Concept">
+          <div class="card-top">
+            <div class="monogram" aria-hidden="true">PA</div>
+            <h3>Personal AI Assistant</h3>
+          </div>
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Personal AI Assistant">TODO: Add screenshot/mockup for Personal AI Assistant</div>
+          <div class="card-badges"><span class="badge status"><span aria-hidden="true">◌</span> Concept</span><span class="badge cat">Productivity</span></div>
+          <p class="desc">Linux PC + Android assistant that works with local files, with a growing companion mascot.</p>
+          <div class="tags"><span>Linux</span><span>Android</span></div>
+          <h4>Key features</h4>
+          <ul><li class="todo">TODO: Add key features for Personal AI Assistant</li></ul>
+          
+        </article>
+        </div>
+        <div class="no-results" id="no-results">
+          <p><strong>No apps match your search or filters.</strong></p>
+          <p class="quiet">Try a different search term or choose “All”.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+<footer class="footer">
+    <div class="wrap footer-inner">
+      <strong>Grims Studio</strong>
+      <nav aria-label="Footer">
+        <a href="./index.html">Home</a>
+        <a href="./applications.html">Applications</a>
+        <a href="./about.html">About</a>
+        <a href="mailto:jaredselasiegallant@gmail.com">Email</a><a href="https://linkedin.com/in/jared-gallant" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </nav>
+      <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site</span>
+    </div>
+  </footer>
+  <script src="./app.js" defer></script>
+</body>
+</html>

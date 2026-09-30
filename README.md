@@ -1,8 +1,10 @@
 # Grims Studio — Portfolio Site
 
-Static portfolio for **Jared Selasie Gallant / Grims Studio** — *Clear Diagnosis, Clean Cure.*
+Three-page static portfolio for **Jared Selasie Gallant / Grims Studio** — *Clear Diagnosis, Clean Cure.*
 
-Built with a tiny Python static generator (no database, no API, no runtime fetch). Content lives in Markdown, output in `docs/` is ready for GitHub Pages.
+Built with a tiny Python static generator (no database, no API, no runtime fetch). Content lives in Markdown, output in `docs/` is ready for GitHub Pages (branch source: `main` + `/docs`).
+
+Pages: `index.html` (Home) · `applications.html` (all 7 apps + search/filter) · `about.html` (biography + contact) · `404.html`.
 
 ## Quick start
 
@@ -12,13 +14,13 @@ python3 -m http.server 8000 --directory docs
 # open http://localhost:8000
 ```
 
-Requirements: Python 3 + `markdown` + `yaml` (both already available on Fedora 44; if missing: `pip install markdown pyyaml`).
+Requirements: Python 3 + `markdown` + `yaml` (if missing: `pip install markdown pyyaml`).
 
 ## Edit content
 
-### `content/profile.md` — name, company, bio
+### `content/profile.md` — name, company, bio (About page)
 
-Frontmatter (site title, header, footer, hero, contact):
+Frontmatter (titles, header, footer, hero, contact):
 
 ```yaml
 name: "Jared Selasie Gallant"
@@ -31,13 +33,11 @@ socials:
   linkedin: "https://linkedin.com/in/jared-gallant"
 ```
 
-Leave unknown fields empty — they are hidden automatically. Never put `YOUR NAME`-style placeholders; they are treated as missing.
+Leave unknown fields empty — they are hidden automatically. Body sections (`# About`, `## Research`, `## Leadership`, `## Skills`, `## Design Work`) render on the About page. Edit freely, then rebuild.
 
-Body is Markdown (`# About`, `## Research`, `## Leadership`, `## Skills`, `## Design Work`). Edit freely, then rebuild.
+### `content/projects.md` — apps (Applications page + Home featured)
 
-### `content/projects.md` — apps
-
-One `## App Name` section per app:
+One `## App Name` section per app. To add an app, copy a section; to remove one, delete its section. No page markup needs editing — cards, filters, and featured links generate from this file.
 
 ```markdown
 ## PocketLedger
@@ -47,42 +47,39 @@ One `## App Name` section per app:
 - technologies: Flutter, Dart, SQLite
 - category: Productivity
 - featured: true
-# optional — omit if unknown:
-# - url: https://… (live app — shows “Open app”)
-# - repository: https://github.com/… (shows “View source”)
-# - image: /images/pocket-ledger.webp
+# optional — omit if unknown, never invent:
+# - features: offline ledger; monthly budgets
+# - repository: https://github.com/… (GitHub button)
+# - url: https://… (Live demo button)
+# - download: https://… (Download button)
+# - image: ./screenshots/pocket-ledger.webp
 ```
 
-Rules (per spec):
+Rules:
 
-- `status` is truthful — never `Running` unless the app is actually live. Current values: `Active`, `In development`, `Planned`, `Concept`, `Completed`.
-- Omit `url` / `repository` when unknown. Buttons are only rendered when a real `https://` URL exists — no dead buttons.
-- `featured: true` gives visual priority (PocketLedger, Project Nexus, Grimoire).
-- `category` drives the filter buttons. Search matches name + description + category + tech + status.
-- To remove an app, delete its `## …` section. To add, copy a section.
+- `status` must be one of `Active`, `In development`, `Planned`, `Concept`, `Completed` (per repo). Anything else renders as `TODO: Confirm status`.
+- Omit `repository` / `url` / `download` when unknown. Buttons render only for real `https://` URLs — no dead links.
+- `featured: true` puts the app on the Home page (currently PocketLedger, Project Nexus, Grimoire).
+- `category` drives the filter buttons (plus an `All` option). Search matches name + description + category + tech + features + status.
+- Missing screenshots/features render as labeled TODO placeholders in the UI.
 
 ## Build / deploy
 
-- Build: `python3 build.py` → `docs/index.html`, `docs/style.css`, `docs/app.js`, `docs/.nojekyll`
+- Build: `python3 build.py` → `docs/index.html`, `docs/applications.html`, `docs/about.html`, `docs/404.html`, `docs/style.css`, `docs/app.js`, `docs/.nojekyll`
 - Local preview: any static server over `docs/`
-- GitHub Pages:
-  1. Push this folder to a repo
-  2. Settings → Pages → Deploy from branch → `main` + `/docs`
-  3. No base-path config needed — all asset links are relative (`./style.css`)
-
-No GitHub API calls at runtime. The app list is only what you maintain in Markdown.
+- GitHub Pages: Settings → Pages → Deploy from branch → `main` + `/docs`. All internal links/assets are relative, verified under the `/Grims-studio/` subpath.
 
 ## What was built
 
-- `build.py` — reads Markdown at build time, renders semantic HTML
-- `assets/style.css` — Clinical Lab theme: dark ink `#121417`, warm paper `#FAF7F2`, lab-teal `#0E7C6B`, system fonts, CSS grid motif, responsive, `prefers-reduced-motion` respected
-- `assets/app.js` — search + category filters, no-results state, clear button, `aria-live` count; content works with JS disabled
-- Sections: Header → Hero (View Apps / Research & Leadership) → Applications grid → About → Research & Leadership → Contact → Footer
-- Cards show monogram (no fake screenshots), status badge with icon + text (not color alone), category, tech tags; featured cards highlighted
+- `build.py` — shared `site_header()` / `site_footer()` partials (active page via `aria-current`), per-page titles/descriptions/OG tags, fragment-anchored app cards (`applications.html#project-nexus`), Active/Completed-first stable sort
+- `assets/style.css` — unchanged Clinical Lab theme + mobile nav menu, screenshot placeholders, `:target` highlight, `prefers-reduced-motion` respected
+- `assets/app.js` — unchanged search/filter + keyboard-accessible mobile nav toggle (Esc closes); all content present with JS disabled
+- Accessibility: skip link, landmarks, labeled controls, `aria-pressed` filters, `aria-live` result count, icon+text status badges, visible focus
 
-## Still needed from you
+## Still needed from you (TODO checklist)
 
-- [ ] Live URLs + GitHub repo URLs for each app (add `url:` / `repository:` in `content/projects.md` to enable Open app / View source)
-- [ ] Project images (optional — drop in `docs/images/` and set `image:`)
-- [ ] `[Grims Studio logo]` / `[app store link]` placeholders if you want branding
-- [ ] No metrics, awards, or users invented — add only real ones
+- [ ] Screenshots/mockups for all 7 apps (or confirm placeholders stay)
+- [ ] Key `features:` per app in `content/projects.md` (currently TODO in UI)
+- [ ] Verified GitHub / Live demo / Download URLs per app (currently no buttons — correct)
+- [ ] Open Graph preview image → save as `docs/og-preview.png` (meta tag already points there relatively)
+- [ ] Confirm email + LinkedIn are the public contact points (from repo frontmatter)

@@ -3,226 +3,123 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Grims Studio — Jared Selasie Gallant</title>
-  <meta name="description" content="Clear Diagnosis, Clean Cure. Biomedical Sciences Researcher &amp; Lead Developer" />
+  <title>Grims Studio — Clear Diagnosis, Clean Cure. Jared Selasie Gallant</title>
+  <meta name="description" content="Grims Studio: Clear Diagnosis, Clean Cure. Offline-first, privacy-conscious apps by Jared Selasie Gallant, Biomedical Sciences Researcher &amp; Lead Developer." />
+  <meta property="og:title" content="Grims Studio — Clear Diagnosis, Clean Cure. Jared Selasie Gallant" />
+  <meta property="og:description" content="Grims Studio: Clear Diagnosis, Clean Cure. Offline-first, privacy-conscious apps by Jared Selasie Gallant, Biomedical Sciences Researcher &amp; Lead Developer." />
+  <meta property="og:type" content="website" />
+  <!-- TODO: supply an Open Graph preview image as docs/og-preview.png and replace the content below -->
+  <meta property="og:image" content="./og-preview.png" />
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <a class="skip-link" href="#applications">Skip to applications</a>
-  <header class="site-header">
+  <a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
     <div class="header-inner">
-      <a class="wordmark" href="#top" aria-label="Grims Studio home">
+      <a class="wordmark" href="./index.html" aria-label="Grims Studio home">
         <span class="wordmark-mark" aria-hidden="true">GS</span>
         <span>Grims Studio<small>Clear Diagnosis, Clean Cure.</small></span>
       </a>
-      <nav class="site-nav" aria-label="Primary">
-        <a href="#applications">Applications</a>
-        <a href="#about">About</a>
-        <a href="#research">Research</a>
-        <a class="nav-cta" href="mailto:jaredselasiegallant@gmail.com">Contact</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu">
+        <span aria-hidden="true">☰</span>
+      </button>
+      <nav class="site-nav" id="primary-nav" aria-label="Primary">
+        <a href="./index.html" class="active" aria-current="page">Home</a><a href="./applications.html">Applications</a><a href="./about.html">About</a><a href="./about.html#contact" class="nav-cta">Contact</a>
       </nav>
     </div>
   </header>
-
-  <main id="top">
-    <section class="hero" aria-label="Introduction">
+  <main id="main">
+<section class="hero" aria-label="Welcome">
       <div class="wrap hero-grid">
         <div>
-          <span class="eyebrow"><i aria-hidden="true"></i> Grims Studio · Portfolio</span>
-          <h1>Jared Selasie Gallant <span>/ Grims Studio</span></h1>
-          <p class="role-line">Biomedical Sciences Researcher &amp; Lead Developer</p>
+          <span class="eyebrow"><i aria-hidden="true"></i> Welcome to Grims Studio</span>
+          <h1>Grims Studio</h1>
           <p class="tagline">“Clear Diagnosis, Clean Cure.”</p>
-          <p class="lede">Biomedical researcher and lead developer diagnosing real-world friction — from heavy-metal tissue damage to unreliable connectivity — and engineering targeted, durable cures: offline-first apps, clean interfaces, local-first performance.</p>
+          <p class="lede">Hello — I'm Jared Selasie Gallant, a biomedical sciences researcher and lead developer. Grims Studio builds offline-first, privacy-conscious apps with scientific precision: diagnosing real-world friction and engineering targeted, durable cures.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#applications">View Apps</a>
-            <a class="btn btn-ghost" href="#research">Research &amp; Leadership</a>
-          </div>
-          <div class="hero-meta">
-            <span>📍 Cape Coast, Ghana</span>
-            <span>✉️ jaredselasiegallant@gmail.com</span>
+            <a class="btn btn-primary" href="./applications.html">View Applications</a>
+            <a class="btn btn-ghost" href="./about.html">About Me</a>
           </div>
         </div>
-        <aside class="hero-card" aria-label="Profile at a glance">
-          <h2>Specimen card</h2>
+        <aside class="hero-card" aria-label="Why trust this work">
+          <h2>Field notes</h2>
           <dl class="specimen">
-            <div><dt>Name</dt><dd>Jared Selasie Gallant</dd></div>
-            <div><dt>Role</dt><dd>Biomedical Sciences Researcher &amp; Lead Developer</dd></div>
-            <div><dt>Studio</dt><dd>Grims Studio</dd></div>
-            <div><dt>Base</dt><dd>Cape Coast, Ghana</dd></div>
-            <div><dt>Focus</dt><dd>Offline-first · Privacy</dd></div>
+            <div><dt>Research-backed</dt><dd>UCC Biomedical Science</dd></div>
+            <div><dt>Offline-first</dt><dd>Local-first apps</dd></div>
+            <div><dt>Clean design</dt><dd>Privacy-conscious UX</dd></div>
           </dl>
         </aside>
       </div>
     </section>
 
-    <section class="block" id="applications" aria-label="Applications">
+    <section class="block" aria-label="Featured applications">
       <div class="wrap">
-        <div class="section-head">
-          <h2>Applications</h2>
-          <p>Prescribed software. 7 entries from <code>content/projects.md</code>.</p>
-          <span class="count-pill" id="result-count" aria-live="polite"></span>
-        </div>
-        <div class="controls" role="search">
-          <div class="search-wrap">
-            <label for="app-search">Search</label>
-            <input type="search" id="app-search" placeholder="Search apps, categories, tech…" autocomplete="off" />
-          </div>
-          <div class="filter-row" role="group" aria-label="Filter by category">
-            <button class="filter-btn" data-filter="all" aria-pressed="true">All</button><button class="filter-btn" data-filter="Design" aria-pressed="false">Design</button><button class="filter-btn" data-filter="Education" aria-pressed="false">Education</button><button class="filter-btn" data-filter="Games" aria-pressed="false">Games</button><button class="filter-btn" data-filter="Media" aria-pressed="false">Media</button><button class="filter-btn" data-filter="Productivity" aria-pressed="false">Productivity</button>
-          </div>
-          <button class="clear-btn" id="clear-filters" type="button">Clear filters</button>
-        </div>
-        <div class="grid" id="app-grid">
+        <div class="section-head"><h2>Featured Apps</h2><p>Start here.</p></div>
+        <div class="grid">
           
-        <article class="card project-card featured" data-category="Productivity" data-search="PocketLedger Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut. Productivity Flutter Dart SQLite Active">
+        <article class="card project-card featured" id="pocketledger" data-category="Productivity" data-search="PocketLedger Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut. Productivity Flutter Dart SQLite  Active">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">PO</div>
             <h3>PocketLedger</h3>
           </div>
-          
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for PocketLedger">TODO: Add screenshot/mockup for PocketLedger</div>
           <div class="card-badges"><span class="badge status"><span aria-hidden="true">●</span> Active</span><span class="badge cat">Productivity</span></div>
           <p class="desc">Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut.</p>
           <div class="tags"><span>Flutter</span><span>Dart</span><span>SQLite</span></div>
+          <p><a href="./applications.html#pocketledger">View on Applications page →</a></p>
           
         </article>
 
-        <article class="card project-card featured" data-category="Media" data-search="Project Nexus Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack. Media Rust gtk4-rs Flatpak Active">
+        <article class="card project-card featured" id="project-nexus" data-category="Media" data-search="Project Nexus Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack. Media Rust gtk4-rs Flatpak  Active">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">PN</div>
             <h3>Project Nexus</h3>
           </div>
-          
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Project Nexus">TODO: Add screenshot/mockup for Project Nexus</div>
           <div class="card-badges"><span class="badge status"><span aria-hidden="true">●</span> Active</span><span class="badge cat">Media</span></div>
           <p class="desc">Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack.</p>
           <div class="tags"><span>Rust</span><span>gtk4-rs</span><span>Flatpak</span></div>
+          <p><a href="./applications.html#project-nexus">View on Applications page →</a></p>
           
         </article>
 
-        <article class="card project-card featured" data-category="Games" data-search="Grimoire: Astral Architect Cozy base-builder / idle RPG. Offline game built with WinUI 3, C#, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub. Games C# WinUI 3 SkiaSharp SQLite In development">
+        <article class="card project-card featured" id="grimoire-astral-architect" data-category="Games" data-search="Grimoire: Astral Architect Cozy base-builder / idle RPG. Offline game built with WinUI 3, C#, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub. Games C# WinUI 3 SkiaSharp SQLite  In development">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">GA</div>
             <h3>Grimoire: Astral Architect</h3>
           </div>
-          
+          <div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for Grimoire: Astral Architect">TODO: Add screenshot/mockup for Grimoire: Astral Architect</div>
           <div class="card-badges"><span class="badge status"><span aria-hidden="true">◐</span> In development</span><span class="badge cat">Games</span></div>
           <p class="desc">Cozy base-builder / idle RPG. Offline game built with WinUI 3, C#, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub.</p>
           <div class="tags"><span>C#</span><span>WinUI 3</span><span>SkiaSharp</span><span>SQLite</span></div>
+          <p><a href="./applications.html#grimoire-astral-architect">View on Applications page →</a></p>
           
         </article>
-
-        <article class="card project-card" data-category="Design" data-search="Artwork Portfolio App Flutter gallery app with glassmorphic white/purple design, auth, upload, edit, and cross-platform sync. Design Flutter Dart Planned">
-          <div class="card-top">
-            <div class="monogram" aria-hidden="true">AP</div>
-            <h3>Artwork Portfolio App</h3>
-          </div>
-          
-          <div class="card-badges"><span class="badge status"><span aria-hidden="true">○</span> Planned</span><span class="badge cat">Design</span></div>
-          <p class="desc">Flutter gallery app with glassmorphic white/purple design, auth, upload, edit, and cross-platform sync.</p>
-          <div class="tags"><span>Flutter</span><span>Dart</span></div>
-          
-        </article>
-
-        <article class="card project-card" data-category="Education" data-search="Gamified Book Reader Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader. Education Android Concept">
-          <div class="card-top">
-            <div class="monogram" aria-hidden="true">GB</div>
-            <h3>Gamified Book Reader</h3>
-          </div>
-          
-          <div class="card-badges"><span class="badge status"><span aria-hidden="true">◌</span> Concept</span><span class="badge cat">Education</span></div>
-          <p class="desc">Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader.</p>
-          <div class="tags"><span>Android</span></div>
-          
-        </article>
-
-        <article class="card project-card" data-category="Productivity" data-search="Personal AI Assistant Linux PC + Android assistant that works with local files, with a growing companion mascot. Productivity Linux Android Concept">
-          <div class="card-top">
-            <div class="monogram" aria-hidden="true">PA</div>
-            <h3>Personal AI Assistant</h3>
-          </div>
-          
-          <div class="card-badges"><span class="badge status"><span aria-hidden="true">◌</span> Concept</span><span class="badge cat">Productivity</span></div>
-          <p class="desc">Linux PC + Android assistant that works with local files, with a growing companion mascot.</p>
-          <div class="tags"><span>Linux</span><span>Android</span></div>
-          
-        </article>
-
-        <article class="card project-card" data-category="Design" data-search="The Pink Whisk Commercial bakery website. Full UI design, layout architecture, and deployment strategy including pastry catalog, order/contact form, and custom-pastry photo upload. Design Penpot HTML CSS JavaScript Completed">
-          <div class="card-top">
-            <div class="monogram" aria-hidden="true">TP</div>
-            <h3>The Pink Whisk</h3>
-          </div>
-          
-          <div class="card-badges"><span class="badge status"><span aria-hidden="true">✓</span> Completed</span><span class="badge cat">Design</span></div>
-          <p class="desc">Commercial bakery website. Full UI design, layout architecture, and deployment strategy including pastry catalog, order/contact form, and custom-pastry photo upload.</p>
-          <div class="tags"><span>Penpot</span><span>HTML</span><span>CSS</span><span>JavaScript</span></div>
-          
-        </article>
-        </div>
-        <div class="no-results" id="no-results">
-          <p><strong>No apps match your filters.</strong></p>
-          <p class="quiet">Try a different search term or category.</p>
         </div>
       </div>
     </section>
 
-    <section class="block" id="about" aria-label="About">
+    <section class="block" aria-label="Contact">
       <div class="wrap">
-        <div class="section-head"><h2>About</h2><p>Clear diagnosis, clean cure.</p></div>
-        <div class="prose">
-          <p><strong>Grims Studio</strong> operates at the intersection of medical science, offline-first software architecture, and user-centered interface design. Built on the ethos <em>Clear Diagnosis, Clean Cure</em>, its work applies scientific precision to both biological research and software engineering. It focuses on diagnosing real-world friction, from cellular damage caused by heavy-metal pollution to unreliable internet connectivity, and engineering targeted, durable solutions.</p>
-<p>The studio's application suite prioritises privacy, local-first performance, and seamless user experience. Alongside software, Grims Studio leads digital media design and brand architecture, supporting academic publications like <em>VOBS</em> for the Association of Biomedical Sciences Students (ABSS) and commercial web layouts like <em>The Pink Whisk</em>.</p>
-        </div>
-      </div>
-    </section>
-
-    
-        <section class="block" id="research" aria-label="Research and background">
-          <div class="wrap">
-            <div class="section-head"><h2>Research &amp; Leadership</h2><p>Diagnosis first.</p></div>
-            <div class="two-col"><div class="mini" id="research"><h3>Research</h3><ul>
-<li><strong>Institution:</strong> University of Cape Coast (UCC), College of Health and Allied Sciences, Department of Biomedical Science</li>
-<li><strong>Degree:</strong> BSc Biomedical Science (2026)</li>
-<li><strong>Research:</strong> histopathological effects of heavy-metal contamination from illegal mining (<em>galamsey</em>) on biological tissue</li>
-<li><strong>Core disciplines:</strong> histopathology (tissue processing, fixation, staining, microscopy); chemical pathology (liver function tests, electrolyte disorders, metabolic acidosis); medical parasitology (helminth and protozoa morphology and life cycles)</li>
-<li><strong>Research tools:</strong> Zotero + Obsidian</li>
-<li><strong>Future goal:</strong> Teaching Assistant in the Department of Biomedical Science; exploring Master's programmes</li>
-</ul></div><div class="mini" id="leadership"><h3>Leadership</h3><ul>
-<li><strong>PRO &amp; Media Coordinator</strong>, Association of Biomedical Sciences Students (ABSS), UCC: communications, event publicity, media strategy, official announcements</li>
-<li><strong>Founder &amp; Lead, ABSS Editorial Board sub-committee:</strong> produces the weekly publication <em>VOBS</em></li>
-</ul></div><div class="mini" id="skills"><h3>Skills</h3><ul>
-<li><strong>Environment:</strong> Fedora Linux (KDE Plasma), custom desktop, power user</li>
-<li><strong>Languages &amp; frameworks:</strong> Flutter/Dart, Rust (gtk4-rs), C#/WinUI 3, SkiaSharp, SQLite, HTML/CSS/JS</li>
-<li><strong>Design:</strong> Penpot, PureRef, digital art</li>
-<li><strong>Infrastructure:</strong> GitHub, GitLab, Supabase, CI/CD</li>
-</ul></div><div class="mini" id="design-work"><h3>Design Work</h3><ul>
-<li><strong>The Pink Whisk:</strong> commercial bakery website. Full UI design, layout architecture, and deployment strategy (pastry catalog, order/contact form, custom-pastry photo upload).</li>
-<li><strong>VOBS:</strong> weekly ABSS departmental publication, established and compiled by the editorial sub-committee.</li>
-<li><strong>Digital art:</strong> composite graphics, branding, and promotional design.</li>
-</ul></div></div>
-          </div>
-        </section>
-
-    <section class="block" id="contact" aria-label="Contact">
-      <div class="wrap">
-        <div class="section-head"><h2>Contact</h2><p>Direct line, no forms.</p></div>
+        <div class="section-head"><h2>Say hello</h2><p>Direct line, no forms.</p></div>
         <div class="prose contact-box">
           <a class="btn btn-ghost" href="mailto:jaredselasiegallant@gmail.com">Email</a><a class="btn btn-ghost" href="https://linkedin.com/in/jared-gallant" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         </div>
       </div>
     </section>
   </main>
-
-  <footer class="footer">
+<footer class="footer">
     <div class="wrap footer-inner">
       <strong>Grims Studio</strong>
       <nav aria-label="Footer">
-        <a href="mailto:jaredselasiegallant@gmail.com">Email</a>
-        <a href="https://linkedin.com/in/jared-gallant" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <a href="./index.html">Home</a>
+        <a href="./applications.html">Applications</a>
+        <a href="./about.html">About</a>
+        <a href="mailto:jaredselasiegallant@gmail.com">Email</a><a href="https://linkedin.com/in/jared-gallant" target="_blank" rel="noopener noreferrer">LinkedIn</a>
       </nav>
-      <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site · Edit <code>content/*.md</code> to update</span>
+      <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site</span>
     </div>
   </footer>
-
   <script src="./app.js" defer></script>
 </body>
 </html>
