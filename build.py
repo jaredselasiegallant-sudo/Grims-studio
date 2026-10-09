@@ -3,7 +3,7 @@
 
 Reads content/profile.md and content/projects.md at build time
 and emits docs/index.html, docs/applications.html, docs/about.html,
-docs/404.html + assets. No database, no API, no runtime fetch.
+docs/app-<slug>.html (one per app), docs/404.html + assets. No database, no API, no runtime fetch.
 Suitable for GitHub Pages (branch source: main + /docs).
 
 Usage:
@@ -74,8 +74,10 @@ def parse_projects(path: Path):
 
     Supported keys: status, description, technologies (comma-separated),
     category, featured (true/false), features (semicolon-separated),
-    url / demo (live demo), repository / github (source), download, image.
-    Optional keys may be omitted.
+    platforms (comma-separated), url / demo (live demo),
+    repository / github / repository2 (source), download, release_notes,
+    version, release_date, file_size, checksum, requirements, image.
+    Optional keys may be omitted; unknown download details stay hidden.
     """
     if not path.exists():
         return []
@@ -94,11 +96,11 @@ def parse_projects(path: Path):
             continue
         if current is None:
             continue
-        m = re.match(r"^\s*-\s*([A-Za-z_]+)\s*:\s*(.+)\s*$", line)
+        m = re.match(r"^\s*-\s*([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.+)\s*$", line)
         if m:
             key = m.group(1).strip().lower()
             val = m.group(2).strip()
-            if key in ("technologies",):
+            if key in ("technologies", "platforms"):
                 current[key] = [t.strip() for t in re.split(r",", val) if t.strip()]
             elif key in ("features",):
                 current[key] = [f.strip() for f in re.split(r";", val) if f.strip()]
@@ -113,6 +115,11 @@ def parse_projects(path: Path):
 def slugify(name: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
     return slug or "app"
+
+
+def app_route(p: dict) -> str:
+    """Stable flat route for an app detail page (same dir => ./ links work)."""
+    return f"app-{slugify(p.get('name', 'app'))}.html"
 
 
 def monogram(name: str) -> str:
@@ -256,78 +263,191 @@ def status_badge(status: str) -> str:
 
 
 def app_links(p: dict) -> str:
-    """Render GitHub / Live demo / Download buttons only for real URLs."""
+    """Render GitHub / Live demo / Download / Release notes buttons.
+
+    Only for real, verified https:// URLs. Multiple source repos render
+    as one button each, labeled with the factual repo name from the URL.
+    """
     buttons = []
-    repo = p.get("repository", p.get("github", ""))
-    demo = p.get("url", p.get("demo", ""))
-    download = p.get("download", "")
-    if is_real(repo) and repo.startswith("http"):
+    repos = []
+    for key in ("repository", "github", "repository2"):
+        v = p.get(key, "")
+        if is_real(v) and str(v).startswith("http") and v not in repos:
+            repos.append(v)
+    if len(repos) == 1:
         buttons.append(
-            f'<a class="action-src" href="{html.escape(repo)}" target="_blank" rel="noopener noreferrer">GitHub</a>'
+            f'<a class="action-src" href="{html.escape(repos[0])}" target="_blank" rel="noopener noreferrer">GitHub</a>'
         )
-    if is_real(demo) and demo.startswith("http"):
+    else:
+        for r in repos:
+            label = f"GitHub: {r.rstrip('/').rsplit('/', 1)[-1]}"
+            buttons.append(
+                f'<a class="action-src" href="{html.escape(r)}" target="_blank" rel="noopener noreferrer">{html.escape(label)}</a>'
+            )
+    demo = p.get("url", p.get("demo", ""))
+    if is_real(demo) and str(demo).startswith("http"):
         buttons.append(
             f'<a class="action-open" href="{html.escape(demo)}" target="_blank" rel="noopener noreferrer">Live demo ↗</a>'
         )
-    if is_real(download) and download.startswith("http"):
+    download = p.get("download", "")
+    if is_real(download) and str(download).startswith("http"):
         buttons.append(
-            f'<a class="action-src" href="{html.escape(download)}" target="_blank" rel="noopener noreferrer">Download</a>'
+            f'<a class="action-src" href="{html.escape(download)}" rel="noopener noreferrer">Download</a>'
+        )
+    notes = p.get("release_notes", "")
+    if is_real(notes) and str(notes).startswith("http"):
+        buttons.append(
+            f'<a class="action-src" href="{html.escape(notes)}" target="_blank" rel="noopener noreferrer">Release notes</a>'
         )
     return f'<div class="card-actions">{"".join(buttons)}</div>' if buttons else ""
 
 
-def app_card(p: dict, *, detailed: bool = False) -> str:
+def shot_html(p: dict, label: str = "screenshot/mockup") -> str:
+    pname = p.get("name", "Untitled")
+    image = p.get("image", "") if is_real(p.get("image")) else ""
+    if image:
+        return f'<img src="{html.escape(image)}" alt="{html.escape(pname)} screenshot" loading="lazy" />'
+    return (
+        f'<div class="shot-placeholder" role="img" '
+        f'aria-label="Screenshot placeholder for {html.escape(pname)}">'
+        f"TODO: Add {label} for {html.escape(pname)}</div>"
+    )
+
+
+def badges_html(p: dict) -> str:
+    status = p.get("status", "").strip() if is_real(p.get("status")) else ""
+    cat = p.get("category", "").strip() if is_real(p.get("category")) else ""
+    badges = status_badge(status)
+    if cat:
+        badges += f'<span class="badge cat">{html.escape(cat)}</span>'
+    return badges
+
+
+def tags_html(techs: list) -> str:
+    if not techs:
+        return ""
+    return '<div class="tags">' + "".join(f"<span>{html.escape(t)}</span>" for t in techs) + "</div>"
+
+
+def catalog_card(p: dict) -> str:
+    """Slim discovery card: name, badges, short description, detail link."""
     pname = p.get("name", "Untitled")
     slug = slugify(pname)
-    status = p.get("status", "").strip() if is_real(p.get("status")) else ""
     desc = p.get("description", "") if is_real(p.get("description")) else ""
     cat = p.get("category", "").strip() if is_real(p.get("category")) else ""
     techs = p.get("technologies", []) if isinstance(p.get("technologies"), list) else []
     feats = p.get("features", []) if isinstance(p.get("features"), list) else []
     featured = bool(p.get("featured"))
-    image = p.get("image", "") if is_real(p.get("image")) else ""
-    search_blob = " ".join([pname, desc, cat, " ".join(techs), " ".join(feats), status])
-
-    if image:
-        shot_html = f'<img src="{html.escape(image)}" alt="{html.escape(pname)} screenshot" loading="lazy" />'
-    else:
-        shot_html = (
-            f'<div class="shot-placeholder" role="img" '
-            f'aria-label="Screenshot placeholder for {html.escape(pname)}">'
-            f"TODO: Add screenshot/mockup for {html.escape(pname)}</div>"
-        )
-
-    badges = status_badge(status)
-    if cat:
-        badges += f'<span class="badge cat">{html.escape(cat)}</span>'
-
-    tags_html = ""
-    if techs:
-        tags_html = '<div class="tags">' + "".join(f"<span>{html.escape(t)}</span>" for t in techs) + "</div>"
-
-    if detailed:
-        if feats:
-            feats_html = "<ul>" + "".join(f"<li>{html.escape(f)}</li>" for f in feats) + "</ul>"
-        else:
-            feats_html = f"<ul><li class=\"todo\">TODO: Add key features for {html.escape(pname)}</li></ul>"
-        extra = f"""<h4>Key features</h4>
-          {feats_html}"""
-    else:
-        extra = f'<p><a href="./applications.html#{slug}">View on Applications page →</a></p>'
-
+    search_blob = " ".join([pname, desc, cat, " ".join(techs), " ".join(feats),
+                            p.get("status", "")])
     return f"""
         <article class="card project-card{' featured' if featured else ''}" id="{slug}" data-category="{html.escape(cat)}" data-search="{html.escape(search_blob)}">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">{html.escape(monogram(pname))}</div>
             <h3>{html.escape(pname)}</h3>
           </div>
-          {shot_html}
-          <div class="card-badges">{badges}</div>
+          {shot_html(p)}
+          <div class="card-badges">{badges_html(p)}</div>
           <p class="desc">{html.escape(desc) if desc else f'<span class="todo">TODO: Add description for {html.escape(pname)}</span>'}</p>
-          {tags_html}
-          {extra}
-          {app_links(p)}
+          <p><a class="btn btn-primary" href="./{app_route(p)}">View app details →</a></p>
         </article>"""
+
+
+def download_section(p: dict) -> str:
+    """Downloads block. Real artifacts only; otherwise an honest status + TODO."""
+    pname = p.get("name", "Untitled")
+    url = p.get("download", "") if is_real(p.get("download")) else ""
+    if url.startswith("http"):
+        facts = []
+        for key, label in (("version", "Version"), ("release_date", "Released"),
+                           ("file_size", "Size"), ("checksum", "Checksum"),
+                           ("requirements", "Requires")):
+            val = p.get(key, "") if is_real(p.get(key)) else ""
+            if val:
+                facts.append(f"<li><strong>{label}:</strong> {html.escape(val)}</li>")
+        facts_html = f"<ul>{''.join(facts)}</ul>" if facts else ""
+        return f"""<p><a class="btn btn-primary" href="{html.escape(url)}" rel="noopener noreferrer">Download →</a></p>
+          {facts_html}"""
+    return f"""<p><strong>Download not available yet.</strong> No verified installable build is published for {html.escape(pname)}.</p>
+          <p class="todo">TODO: Provide a verified installable build for {html.escape(pname)}</p>"""
+
+
+def app_detail_body(p: dict, siblings: list) -> str:
+    """Standalone detail/download page body for one app."""
+    pname = p.get("name", "Untitled")
+    desc = p.get("description", "") if is_real(p.get("description")) else ""
+    techs = p.get("technologies", []) if isinstance(p.get("technologies"), list) else []
+    feats = p.get("features", []) if isinstance(p.get("features"), list) else []
+    plats = p.get("platforms", []) if isinstance(p.get("platforms"), list) else []
+    if feats:
+        feats_html = "<ul>" + "".join(f"<li>{html.escape(f)}</li>" for f in feats) + "</ul>"
+    else:
+        feats_html = f"<ul><li class=\"todo\">TODO: Add key features for {html.escape(pname)}</li></ul>"
+    if plats:
+        plats_html = "<ul>" + "".join(f"<li>{html.escape(x)}</li>" for x in plats) + "</ul>"
+    else:
+        plats_html = f"<p class=\"todo\">TODO: Confirm supported platforms for {html.escape(pname)}</p>"
+    more = ""
+    if siblings:
+        items = "".join(
+            f"<li><a href=\"./{app_route(q)}\">{html.escape(q.get('name', 'Untitled'))}</a></li>"
+            for q in siblings[:3]
+        )
+        more = f"""<section class="block" aria-label="More applications">
+      <div class="wrap">
+        <div class="section-head"><h2>More applications</h2><p>Same category.</p></div>
+        <div class="prose"><ul>{items}</ul></div>
+      </div>
+    </section>"""
+    return f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+      <div class="wrap">
+        <ol>
+          <li><a href="./index.html">Home</a></li>
+          <li><a href="./applications.html">Applications</a></li>
+          <li aria-current="page">{html.escape(pname)}</li>
+        </ol>
+      </div>
+    </nav>
+    <section class="block" aria-label="{html.escape(pname)}">
+      <div class="wrap">
+        <h1 class="page-title">{html.escape(pname)}</h1>
+        <div class="card-badges">{badges_html(p)}</div>
+        <div class="prose">
+          <p>{html.escape(desc) if desc else f'<span class="todo">TODO: Add description for {html.escape(pname)}</span>'}</p>
+        </div>
+      </div>
+    </section>
+    <section class="block" aria-label="Screenshots">
+      <div class="wrap">
+        <div class="section-head"><h2>Screenshots</h2></div>
+        {shot_html(p, label="screenshot")}
+      </div>
+    </section>
+    <section class="block" aria-label="Details">
+      <div class="wrap">
+        <div class="section-head"><h2>Details</h2></div>
+        <div class="two-col">
+          <div class="mini"><h3>Key features</h3>{feats_html}</div>
+          <div class="mini"><h3>Technology</h3>{tags_html(techs) if techs else f'<p class="todo">TODO: Confirm technology stack for {html.escape(pname)}</p>'}
+            <h3>Platforms</h3>{plats_html}</div>
+        </div>
+      </div>
+    </section>
+    <section class="block" aria-label="Downloads">
+      <div class="wrap">
+        <div class="section-head"><h2>Downloads</h2><p>Verified builds only.</p></div>
+        <div class="prose">
+          {download_section(p)}
+          {app_links(p)}
+        </div>
+      </div>
+    </section>
+    {more}
+    <section class="block" aria-label="Back to catalog">
+      <div class="wrap">
+        <p><a class="btn btn-ghost" href="./applications.html">← All applications</a></p>
+      </div>
+    </section>"""
 
 
 # --------------------------------------------------------------------------
@@ -336,7 +456,7 @@ def app_card(p: dict, *, detailed: bool = False) -> str:
 
 def home_page(ctx: dict) -> str:
     featured = [p for p in ctx["projects"] if p.get("featured")]
-    cards = "\n".join(app_card(p) for p in featured)
+    cards = "\n".join(catalog_card(p) for p in featured)
     contact = ctx["contact_links"]
     return f"""<section class="hero" aria-label="Welcome">
       <div class="wrap hero-grid">
@@ -383,7 +503,7 @@ def home_page(ctx: dict) -> str:
 def applications_page(ctx: dict) -> str:
     # Verified shipped work first; original order otherwise. Statuses unchanged.
     ordered = sorted(ctx["projects"], key=lambda p: STATUS_RANK.get((p.get("status") or "").strip().lower(), 1))
-    cards = "\n".join(app_card(p, detailed=True) for p in ordered)
+    cards = "\n".join(catalog_card(p) for p in ordered)
     categories = sorted({p.get("category", "").strip() for p in ordered if is_real(p.get("category"))})
     filters = ['<button class="filter-btn" data-filter="all" aria-pressed="true">All</button>']
     for c in categories:
@@ -541,6 +661,21 @@ def build(out_dir: Path):
          "", not_found_page(ctx), False),
     ]
 
+    # One standalone detail/download page per app, data-driven.
+    # Siblings share a category (no invented relationships).
+    for p in projects:
+        pname = p.get("name", "Untitled")
+        cat = p.get("category", "").strip() if is_real(p.get("category")) else ""
+        siblings = [q for q in projects
+                    if q is not p and cat and is_real(q.get("category"))
+                    and q.get("category", "").strip() == cat]
+        desc = p.get("description", "") if is_real(p.get("description")) else ""
+        pages.append(
+            (app_route(p), pname, f"{pname} — {company}",
+             f"{pname} ({p.get('status', 'status TBD')}) by {company}: {desc[:140]}",
+             "applications.html", app_detail_body(p, siblings), True),
+        )
+
     out_dir.mkdir(parents=True, exist_ok=True)
     for filename, _label, title, desc, active, body, scripts in pages:
         page = base_page(title=title, description=desc, company=company,
@@ -557,9 +692,11 @@ def build(out_dir: Path):
     (out_dir / ".nojekyll").write_text("", encoding="utf-8")
     # SEO: sitemap + robots for Google indexing (404 excluded from sitemap)
     today = date.today().isoformat()
+    sitemap_files = ["index.html", "applications.html", "about.html"]
+    sitemap_files += [app_route(p) for p in projects]
     urls = "\n".join(
         f"  <url><loc>{SITE_URL}/{f}</loc><lastmod>{today}</lastmod></url>"
-        for f in ("index.html", "applications.html", "about.html")
+        for f in sitemap_files
     )
     (out_dir / "sitemap.xml").write_text(
         f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n',
