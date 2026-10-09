@@ -65,7 +65,8 @@ Rules:
 
 ## Build / deploy
 
-- Build: `python3 build.py` → `docs/index.html`, `docs/applications.html`, `docs/about.html`, `docs/404.html`, `docs/style.css`, `docs/app.js`, `docs/.nojekyll`
+- Build: `python3 build.py` → `docs/index.html`, `docs/applications.html`, `docs/about.html`, `docs/404.html`, `docs/style.css`, `docs/app.js`, `docs/grims-mark.svg`, `docs/grims-logo-horizontal.svg`, `docs/.nojekyll`
+- Brand assets: `LOGOS/` holds the Inkscape originals. Web copies live in `assets/` (`grims-mark.svg` — header + favicon; `grims-logo-horizontal.svg` — footer) and are copied to `docs/` at build time. If a logo changes, re-export Plain SVG in Inkscape and overwrite the `assets/` copy.
 - Local preview: any static server over `docs/`
 - GitHub Pages: Settings → Pages → Deploy from branch → `main` + `/docs`. All internal links/assets are relative, verified under the `/Grims-studio/` subpath.
 

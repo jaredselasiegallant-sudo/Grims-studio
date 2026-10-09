@@ -172,7 +172,7 @@ def site_header(company: str, tagline: str, email: str, active: str) -> str:
     return f"""<header class="site-header">
     <div class="header-inner">
       <a class="wordmark" href="./index.html" aria-label="{html.escape(company)} home">
-        <span class="wordmark-mark" aria-hidden="true">GS</span>
+        <img class="wordmark-logo" src="./grims-mark.svg" alt="" width="34" height="34" />
         <span>{html.escape(company)}<small>{html.escape(tagline) if tagline else "Portfolio"}</small></span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu">
@@ -195,7 +195,7 @@ def site_footer(company: str, email: str, socials: dict) -> str:
         )
     return f"""<footer class="footer">
     <div class="wrap footer-inner">
-      <strong>{html.escape(company)}</strong>
+      <img class="footer-logo" src="./grims-logo-horizontal.svg" alt="{html.escape(company)}" height="30" />
       <nav aria-label="Footer">
         <a href="./index.html">Home</a>
         <a href="./applications.html">Applications</a>
@@ -224,6 +224,7 @@ def base_page(*, title: str, description: str, company: str, tagline: str,
   <!-- TODO: supply an Open Graph preview image as docs/og-preview.png and replace the content below -->
   <meta property="og:image" content="./og-preview.png" />
   <link rel="stylesheet" href="./style.css" />
+  <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -542,7 +543,7 @@ def build(out_dir: Path):
                          tagline=tagline, email=email, socials=socials,
                          active=active, body=body, scripts=scripts)
         (out_dir / filename).write_text(page, encoding="utf-8")
-    for asset in ("style.css", "app.js"):
+    for asset in ("style.css", "app.js", "grims-mark.svg", "grims-logo-horizontal.svg"):
         src = ROOT / "assets" / asset
         if src.exists():
             shutil.copy(src, out_dir / asset)
