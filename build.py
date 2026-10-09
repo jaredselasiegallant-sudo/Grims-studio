@@ -543,7 +543,8 @@ def build(out_dir: Path):
                          tagline=tagline, email=email, socials=socials,
                          active=active, body=body, scripts=scripts)
         (out_dir / filename).write_text(page, encoding="utf-8")
-    for asset in ("style.css", "app.js", "grims-mark.svg", "grims-logo-horizontal.svg"):
+    for asset in ("style.css", "app.js", "grims-mark.svg", "grims-logo-horizontal.svg",
+                  "googlee8fcbc5f56b1ecd1.html"):
         src = ROOT / "assets" / asset
         if src.exists():
             shutil.copy(src, out_dir / asset)
