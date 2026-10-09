@@ -13,6 +13,7 @@ import argparse
 import html
 import re
 import shutil
+from datetime import date
 from pathlib import Path
 
 import markdown
@@ -20,6 +21,8 @@ import yaml
 
 ROOT = Path(__file__).parent
 CONTENT = ROOT / "content"
+
+SITE_URL = "https://jaredselasiegallant-sudo.github.io/Grims-studio"
 
 STATUS_ICONS = {
     "running": "●",
@@ -209,7 +212,7 @@ def site_footer(company: str, email: str, socials: dict) -> str:
 
 def base_page(*, title: str, description: str, company: str, tagline: str,
               email: str, socials: dict, active: str, body: str,
-              scripts: bool = True) -> str:
+              canonical: str, scripts: bool = True) -> str:
     scripts_html = '  <script src="./app.js" defer></script>' if scripts else ""
     return f"""<!doctype html>
 <html lang="en">
@@ -225,6 +228,7 @@ def base_page(*, title: str, description: str, company: str, tagline: str,
   <meta property="og:image" content="./og-preview.png" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
+  <link rel="canonical" href="{html.escape(canonical)}" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -541,7 +545,9 @@ def build(out_dir: Path):
     for filename, _label, title, desc, active, body, scripts in pages:
         page = base_page(title=title, description=desc, company=company,
                          tagline=tagline, email=email, socials=socials,
-                         active=active, body=body, scripts=scripts)
+                         active=active, body=body,
+                         canonical=f"{SITE_URL}/{filename}" if filename != "404.html" else SITE_URL,
+                         scripts=scripts)
         (out_dir / filename).write_text(page, encoding="utf-8")
     for asset in ("style.css", "app.js", "grims-mark.svg", "grims-logo-horizontal.svg",
                   "googlee8fcbc5f56b1ecd1.html"):
@@ -549,6 +555,20 @@ def build(out_dir: Path):
         if src.exists():
             shutil.copy(src, out_dir / asset)
     (out_dir / ".nojekyll").write_text("", encoding="utf-8")
+    # SEO: sitemap + robots for Google indexing (404 excluded from sitemap)
+    today = date.today().isoformat()
+    urls = "\n".join(
+        f"  <url><loc>{SITE_URL}/{f}</loc><lastmod>{today}</lastmod></url>"
+        for f in ("index.html", "applications.html", "about.html")
+    )
+    (out_dir / "sitemap.xml").write_text(
+        f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}\n</urlset>\n',
+        encoding="utf-8",
+    )
+    (out_dir / "robots.txt").write_text(
+        f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}/sitemap.xml\n",
+        encoding="utf-8",
+    )
     print(f"Built {len(pages)} pages with {len(projects)} projects into {out_dir}.")
 
 

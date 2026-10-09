@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://jaredselasiegallant-sudo.github.io/Grims-studio/sitemap.xml
