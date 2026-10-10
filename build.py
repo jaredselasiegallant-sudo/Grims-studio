@@ -690,6 +690,9 @@ def build(out_dir: Path):
         if src.exists():
             shutil.copy(src, out_dir / asset)
     (out_dir / ".nojekyll").write_text("", encoding="utf-8")
+    shots_src = ROOT / "assets" / "screenshots"
+    if shots_src.is_dir():
+        shutil.copytree(shots_src, out_dir / "screenshots", dirs_exist_ok=True)
     # SEO: sitemap + robots for Google indexing (404 excluded from sitemap)
     today = date.today().isoformat()
     sitemap_files = ["index.html", "applications.html", "about.html"]

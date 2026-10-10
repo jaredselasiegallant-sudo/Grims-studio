@@ -21,6 +21,7 @@
 - description: Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack.
 - technologies: Rust, gtk4-rs, Flatpak
 - platforms: Fedora Linux
+- image: ./screenshots/project-nexus.webp
 - category: Media
 - featured: true
 
@@ -74,3 +75,4 @@
 - features: Pastry catalog; Shopping cart; Checkout; Contact/order page
 - repository: https://github.com/jaredselasiegallant-sudo/The-pinkwhisk
 - url: https://the-pinkwhisk.vercel.app/
+- image: ./screenshots/the-pink-whisk.webp
