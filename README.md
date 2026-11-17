@@ -66,7 +66,8 @@ Rules:
 
 ## Build / deploy
 
-- Build: `python3 build.py` → `docs/index.html`, `docs/applications.html`, `docs/app-*.html` (7 detail pages), `docs/about.html`, `docs/404.html`, `docs/style.css`, `docs/app.js`, `docs/grims-mark.svg`, `docs/grims-logo-horizontal.svg`, `docs/sitemap.xml`, `docs/robots.txt`, `docs/.nojekyll`
+- Build: `python3 build.py` → `docs/index.html`, `docs/applications.html`, `docs/app-*.html` (7 detail pages), `docs/about.html`, `docs/404.html`, `docs/style.css`, `docs/app.js`, `docs/fox.js`, `docs/anime.umd.min.js`, `docs/grims-mark.svg`, `docs/grims-logo-horizontal.svg`, `docs/sitemap.xml`, `docs/robots.txt`, `docs/.nojekyll`
+- Kit the fox mascot: inline SVG rig in `build.py` (`fox_svg()`), animated by `assets/fox.js` with Anime.js v4 (vendored at `assets/anime.umd.min.js` — no CDN, no runtime fetch). Tracks the cursor, reacts to clicks/typing/scroll, pet it for a heart burst. Static illustration without JS; fully disabled under `prefers-reduced-motion`.
 - Brand assets: `LOGOS/` holds the Inkscape originals. Web copies live in `assets/` (`grims-mark.svg` — header + favicon; `grims-logo-horizontal.svg` — footer) and are copied to `docs/` at build time. If a logo changes, re-export Plain SVG in Inkscape and overwrite the `assets/` copy.
 - Local preview: any static server over `docs/`
 - GitHub Pages: Settings → Pages → Deploy from branch → `main` + `/docs`. All internal links/assets are relative, verified under the `/Grims-studio/` subpath.

@@ -58,4 +58,36 @@
   });
 
   apply();
+  document.querySelectorAll('.footer .quiet').forEach(function (el) {
+    el.textContent = '© ' + new Date().getFullYear() + ' Grims Studio · Static site';
+  });
+
+  // Scroll-reveal for below-the-fold sections (no-op if no IntersectionObserver).
+  var reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function (el) { io.observe(el); });
+  } else {
+    reveals.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
+  // Sticky header gets extra depth once the user scrolls.
+  var header = document.querySelector('.site-header');
+  if (header) {
+    var onScroll = function () { header.classList.toggle('scrolled', window.scrollY > 8); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Fade-up reveal for standard blocks (skip the hero download zone).
+  document.querySelectorAll('.block:not(.download-hero)').forEach(function (el) {
+    el.classList.add('reveal');
+  });
 })();

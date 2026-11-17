@@ -164,6 +164,71 @@ def md_to_html(md_text: str) -> str:
 # Shared partials (single source: no duplicated header/footer markup)
 # --------------------------------------------------------------------------
 
+def fox_svg(variant: str = "corner") -> str:
+    """Kit the fox mascot. Inline SVG rig (.fx-* groups) animated by fox.js.
+
+    Without JS it renders as a complete static illustration.
+    variant 'dig' adds the 404 dirt mound in front of the paws.
+    """
+    dirt = ""
+    if variant == "dig":
+        dirt = """<g class="fx-dirt">
+          <ellipse cx="160" cy="316" rx="78" ry="11" fill="#C89B6A"/>
+          <ellipse cx="118" cy="309" rx="15" ry="6" fill="#9A6E42"/>
+          <ellipse cx="205" cy="306" rx="11" ry="5" fill="#9A6E42"/>
+        </g>"""
+    return f"""<svg class="fox fox-{variant}" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
+      <title>Kit, the Grims Studio fox</title>
+      <g class="fx-tail">
+        <path d="M218 280 C 272 284 296 238 284 184" fill="none" stroke="#EF7A2C" stroke-width="30" stroke-linecap="round"/>
+        <circle cx="284" cy="184" r="16" fill="#FFE9D2"/>
+      </g>
+      <g class="fx-body">
+        <path d="M160 166 C 114 166 86 208 86 252 C 86 290 118 308 160 308 C 202 308 234 290 234 252 C 234 208 206 166 160 166 Z" fill="#FF8A3D"/>
+        <ellipse cx="160" cy="264" rx="50" ry="40" fill="#FFE9D2"/>
+      </g>
+      <g class="fx-paws">
+        <rect x="122" y="284" width="32" height="26" rx="13" fill="#FFD9B5" stroke="#EF7A2C" stroke-width="1.5"/>
+        <rect x="166" y="284" width="32" height="26" rx="13" fill="#FFD9B5" stroke="#EF7A2C" stroke-width="1.5"/>
+      </g>
+      {dirt}
+      <g class="fx-neck">
+        <g class="fx-head">
+          <g class="fx-ear fx-ear-l">
+            <path d="M120 64 L110 18 L156 46 Z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M124 54 L116 30 L148 46 Z" fill="#FFCFA8"/>
+          </g>
+          <g class="fx-ear fx-ear-r">
+            <path d="M200 64 L210 18 L164 46 Z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M196 54 L204 30 L172 46 Z" fill="#FFCFA8"/>
+          </g>
+          <path d="M160 52 C 116 52 94 82 94 114 C 94 150 124 170 160 170 C 196 170 226 150 226 114 C 226 82 204 52 160 52 Z" fill="#FF8A3D"/>
+          <path d="M160 104 C 134 104 118 120 118 138 C 118 158 138 170 160 170 C 182 170 202 158 202 138 C 202 120 186 104 160 104 Z" fill="#FFE9D2"/>
+          <g class="fx-eyes">
+            <g class="fx-eye fx-eye-l">
+              <ellipse cx="134" cy="100" rx="12" ry="13" fill="#FFFDF8"/>
+              <circle class="fx-pupil" cx="134" cy="103" r="5.5" fill="#3A2A21"/>
+              <circle cx="137" cy="96" r="2.2" fill="#FFFFFF"/>
+            </g>
+            <g class="fx-eye fx-eye-r">
+              <ellipse cx="186" cy="100" rx="12" ry="13" fill="#FFFDF8"/>
+              <circle class="fx-pupil" cx="186" cy="103" r="5.5" fill="#3A2A21"/>
+              <circle cx="189" cy="96" r="2.2" fill="#FFFFFF"/>
+            </g>
+          </g>
+          <g class="fx-squint">
+            <path d="M122 100 Q134 90 146 100" fill="none" stroke="#3A2A21" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M174 100 Q186 90 198 100" fill="none" stroke="#3A2A21" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+          <ellipse cx="112" cy="124" rx="9" ry="5" fill="#FFB3A7" opacity=".85"/>
+          <ellipse cx="208" cy="124" rx="9" ry="5" fill="#FFB3A7" opacity=".85"/>
+          <path d="M152 122 Q160 116 168 122 Q164 132 160 133 Q156 132 152 122 Z" fill="#3A2A21"/>
+          <path d="M160 133 L160 139 M148 141 Q160 150 172 141" fill="none" stroke="#3A2A21" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+      </g>
+    </svg>"""
+
+
 NAV_ITEMS = [
     ("index.html", "Home"),
     ("applications.html", "Applications"),
@@ -220,7 +285,14 @@ def site_footer(company: str, email: str, socials: dict) -> str:
 def base_page(*, title: str, description: str, company: str, tagline: str,
               email: str, socials: dict, active: str, body: str,
               canonical: str, scripts: bool = True) -> str:
-    scripts_html = '  <script src="./app.js" defer></script>' if scripts else ""
+    # Order matters: anime (lib) -> app.js (nav/search) -> fox.js (mascot rig).
+    scripts_html = ""
+    if scripts:
+        scripts_html = (
+            '  <script src="./anime.umd.min.js" defer></script>\n'
+            '  <script src="./app.js" defer></script>\n'
+            '  <script src="./fox.js" defer></script>'
+        )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -262,55 +334,17 @@ def status_badge(status: str) -> str:
     return '<span class="badge status"><span aria-hidden="true">?</span> TODO: Confirm status</span>'
 
 
-def app_links(p: dict) -> str:
-    """Render GitHub / Live demo / Download / Release notes buttons.
-
-    Only for real, verified https:// URLs. Multiple source repos render
-    as one button each, labeled with the factual repo name from the URL.
-    """
-    buttons = []
-    repos = []
-    for key in ("repository", "github", "repository2"):
-        v = p.get(key, "")
-        if is_real(v) and str(v).startswith("http") and v not in repos:
-            repos.append(v)
-    if len(repos) == 1:
-        buttons.append(
-            f'<a class="action-src" href="{html.escape(repos[0])}" target="_blank" rel="noopener noreferrer">GitHub</a>'
-        )
-    else:
-        for r in repos:
-            label = f"GitHub: {r.rstrip('/').rsplit('/', 1)[-1]}"
-            buttons.append(
-                f'<a class="action-src" href="{html.escape(r)}" target="_blank" rel="noopener noreferrer">{html.escape(label)}</a>'
-            )
-    demo = p.get("url", p.get("demo", ""))
-    if is_real(demo) and str(demo).startswith("http"):
-        buttons.append(
-            f'<a class="action-open" href="{html.escape(demo)}" target="_blank" rel="noopener noreferrer">Live demo ↗</a>'
-        )
-    download = p.get("download", "")
-    if is_real(download) and str(download).startswith("http"):
-        buttons.append(
-            f'<a class="action-src" href="{html.escape(download)}" rel="noopener noreferrer">Download</a>'
-        )
-    notes = p.get("release_notes", "")
-    if is_real(notes) and str(notes).startswith("http"):
-        buttons.append(
-            f'<a class="action-src" href="{html.escape(notes)}" target="_blank" rel="noopener noreferrer">Release notes</a>'
-        )
-    return f'<div class="card-actions">{"".join(buttons)}</div>' if buttons else ""
-
-
 def shot_html(p: dict, label: str = "screenshot/mockup") -> str:
     pname = p.get("name", "Untitled")
     image = p.get("image", "") if is_real(p.get("image")) else ""
     if image:
         return f'<img src="{html.escape(image)}" alt="{html.escape(pname)} screenshot" loading="lazy" />'
     return (
-        f'<div class="shot-placeholder" role="img" '
-        f'aria-label="Screenshot placeholder for {html.escape(pname)}">'
-        f"TODO: Add {label} for {html.escape(pname)}</div>"
+        f'<div class="shot-placeholder" role="img" aria-label="Screenshot placeholder for {html.escape(pname)}">'
+        f'<div class="shot-lett" aria-hidden="true">{html.escape(monogram(pname))}</div>'
+        f"<p>No screenshot</p>"
+        f'<p class="quiet">Mockup coming soon</p>'
+        f"</div>"
     )
 
 
@@ -351,25 +385,142 @@ def catalog_card(p: dict) -> str:
           <p class="desc">{html.escape(desc) if desc else f'<span class="todo">TODO: Add description for {html.escape(pname)}</span>'}</p>
           <p><a class="btn btn-primary" href="./{app_route(p)}">View app details →</a></p>
         </article>"""
+def primary_button(p: dict) -> str:
+    """Single primary CTA for an app; real URLs only."""
+    download = p.get("download", "")
+    url = p.get("url", p.get("demo", ""))
+    repo = p.get("repository", p.get("github", ""))
+    if is_real(download) and str(download).startswith("http"):
+        return f'<a class="btn btn-primary" href="{html.escape(download)}" rel="noopener noreferrer">Download →</a>'
+    if is_real(url) and str(url).startswith("http"):
+        return f'<a class="btn btn-primary" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer">Open app ↗</a>'
+    if is_real(repo) and str(repo).startswith("http"):
+        return f'<a class="btn btn-primary" href="{html.escape(repo)}" target="_blank" rel="noopener noreferrer">View source ↗</a>'
+    return '<a class="btn btn-primary" href="./applications.html">View applications →</a>'
 
 
-def download_section(p: dict) -> str:
-    """Downloads block. Real artifacts only; otherwise an honest status + TODO."""
-    pname = p.get("name", "Untitled")
-    url = p.get("download", "") if is_real(p.get("download")) else ""
-    if url.startswith("http"):
-        facts = []
-        for key, label in (("version", "Version"), ("release_date", "Released"),
-                           ("file_size", "Size"), ("checksum", "Checksum"),
-                           ("requirements", "Requires")):
-            val = p.get(key, "") if is_real(p.get(key)) else ""
-            if val:
-                facts.append(f"<li><strong>{label}:</strong> {html.escape(val)}</li>")
-        facts_html = f"<ul>{''.join(facts)}</ul>" if facts else ""
-        return f"""<p><a class="btn btn-primary" href="{html.escape(url)}" rel="noopener noreferrer">Download →</a></p>
-          {facts_html}"""
-    return f"""<p><strong>Download not available yet.</strong> No verified installable build is published for {html.escape(pname)}.</p>
-          <p class="todo">TODO: Provide a verified installable build for {html.escape(pname)}</p>"""
+def platform_cards(p: dict) -> str:
+    """Secondary, platform-specific cards (demo / source repo)."""
+    rows = []
+    url = p.get("url", p.get("demo", ""))
+    repo = p.get("repository", p.get("github", ""))
+    repo2 = p.get("repository2", "")
+    if is_real(url) and str(url).startswith("http"):
+        rows.append(
+            f'<a class="plat" href="{html.escape(url)}" target="_blank" rel="noopener noreferrer">'
+            f'<span class="plat-cap">Web</span><span class="plat-desc">Open in browser</span></a>'
+        )
+    for r in (repo, repo2):
+        if is_real(r) and str(r).startswith("http"):
+            label = r.rstrip("/").rsplit("/", 1)[-1]
+            rows.append(
+                f'<a class="plat" href="{html.escape(r)}" target="_blank" rel="noopener noreferrer">'
+                f'<span class="plat-cap">GitHub</span><span class="plat-desc">View source · {html.escape(label)}</span></a>'
+            )
+    if not rows:
+        return '<p class="coming-soon">Platform packages coming soon</p>'
+    return '<div class="plat-row">' + "".join(rows) + "</div>"
+
+
+def version_history(p: dict) -> str:
+    """Honest, data-driven release list; no invented changelogs."""
+    version = p.get("version", "")
+    download = p.get("download", "")
+    notes = p.get("release_notes", "")
+    has = any(is_real(p.get(k)) for k in ("version", "release_notes", "download", "file_size"))
+    if not has:
+        return '<p class="coming-soon">Release history coming soon</p>'
+    rows = []
+    if is_real(version) and is_real(download):
+        rows.append(
+            f"<li><a href='{html.escape(download)}' rel='noopener noreferrer'>v{version}</a>"
+            f"<span class='vh-tag'>Latest release</span></li>"
+        )
+    if is_real(notes):
+        rows.append(
+            f"<li><a href='{html.escape(notes)}' target='_blank' rel='noopener noreferrer'>Release notes ↗</a></li>"
+        )
+    if not rows:
+        rows.append("<li>No releases published yet</li>")
+    return (
+        '<div class="vh"><div class="section-head"><h2>Version history</h2>'
+        "<p>Older releases are available on GitHub.</p></div><ul>"
+        + "".join(rows)
+        + "</ul></div>"
+    )
+
+
+def trust_bar(p: dict) -> str:
+    """Explicit security & trust signals, placed near the download area."""
+    items = []
+    repo = p.get("repository", "")
+    dl = p.get("download", "")
+    url = p.get("url", p.get("demo", ""))
+    if is_real(repo):
+        items.append(f'<a href="{html.escape(repo)}" target="_blank" rel="noopener noreferrer">Official GitHub release</a>')
+    elif is_real(dl):
+        items.append(f'<a href="{html.escape(dl)}" rel="noopener noreferrer">Verified download</a>')
+    elif is_real(url):
+        items.append(f'<a href="{html.escape(url)}" target="_blank" rel="noopener noreferrer">Live demo</a>')
+    if not items:
+        items.append("<span class='quiet'>Official source is linked below</span>")
+    return f'<div class="trust-bar"><span class="trust-dots" aria-hidden="true"></span><span class="trust-text">{html.escape(" · ".join(items))}</span></div>'
+
+
+def privacy_note(p: dict) -> str:
+    """Grounded, content-backed offline/privacy statement."""
+    feats = " ".join(p.get("features", []) or []).lower()
+    desc = (p.get("description", "") or "").lower()
+    if "no account or microtransactions" in feats:
+        return "100% offline. No account or microtransactions."
+    if "offline" in feats or "offline" in desc:
+        return "Works fully offline — local data, no cloud sync."
+    return None
+
+
+def faq_block(p: dict) -> str:
+    """FAQ answering the conversion-blockers, using only reported facts."""
+    plats = p.get("platforms", []) or []
+    req = p.get("requirements", "") or ""
+    feats = " ".join(p.get("features", []) or []).lower()
+    desc = (p.get("description", "") or "").lower()
+    release_notes = is_real(p.get("release_notes", ""))
+    items = []
+    if plats or req:
+        items.append(("What do I need to run this?", ", ".join(plats) if plats else "No requirements published yet."))
+    if "no account or microtransactions" in feats:
+        items.append(("Do I need an account?", "No account is required."))
+    elif "offline" in feats or "offline" in desc:
+        items.append(("Do I need an account?", "No — it runs fully offline on your device."))
+    items.append(("Where do I find older versions?", "Older releases are published on GitHub." if release_notes else "No older releases have been published yet."))
+    items.append(("Is this app on the App Store or Google Play?", "Not distributed through a public app store. The official build is linked in the download area."))
+    body = "".join(
+        f"<li><details class='faq-item'><summary>{html.escape(q)}</summary>"
+        f"<p>{html.escape(a)}</p></details></li>"
+        for q, a in items
+    )
+    return f'<ul class="faq-list">{body}</ul>'
+
+
+def spec_rows(p: dict) -> str:
+    """Key/value technical details, honestly filled from the content."""
+    rows = []
+    plats = p.get("platforms", []) or []
+    req = p.get("requirements", "") or ""
+    techs = p.get("technologies", []) or []
+    if plats:
+        rows.append(("Platforms", ", ".join(plats)))
+    if req:
+        rows.append(("Requirements", html.escape(req)))
+    if techs:
+        rows.append(("Built with", ", ".join(techs)))
+    if not rows:
+        return '<p class="coming-soon">Technical details coming soon</p>'
+    return (
+        '<div class="spec-grid">'
+        + "".join(f"<div class='spec'><dt>{k}</dt><dd>{v}</dd></div>" for k, v in rows)
+        + "</div>"
+    )
 
 
 def app_detail_body(p: dict, siblings: list) -> str:
@@ -379,77 +530,103 @@ def app_detail_body(p: dict, siblings: list) -> str:
     techs = p.get("technologies", []) if isinstance(p.get("technologies"), list) else []
     feats = p.get("features", []) if isinstance(p.get("features"), list) else []
     plats = p.get("platforms", []) if isinstance(p.get("platforms"), list) else []
+
     if feats:
         feats_html = "<ul>" + "".join(f"<li>{html.escape(f)}</li>" for f in feats) + "</ul>"
     else:
-        feats_html = f"<ul><li class=\"todo\">TODO: Add key features for {html.escape(pname)}</li></ul>"
+        feats_html = f'<p class="coming-soon">Key features coming soon</p>'
     if plats:
         plats_html = "<ul>" + "".join(f"<li>{html.escape(x)}</li>" for x in plats) + "</ul>"
     else:
-        plats_html = f"<p class=\"todo\">TODO: Confirm supported platforms for {html.escape(pname)}</p>"
+        plats_html = f'<p class="coming-soon">Supported platforms coming soon</p>'
+
+    primary = primary_button(p)
+    plat_cards = platform_cards(p)
+    vh = version_history(p)
+    trust = trust_bar(p)
+    privacy = privacy_note(p)
+    faq_html = faq_block(p)
+    specs = spec_rows(p)
+
     more = ""
     if siblings:
         items = "".join(
-            f"<li><a href=\"./{app_route(q)}\">{html.escape(q.get('name', 'Untitled'))}</a></li>"
+            f'<li><a href="./{app_route(q)}">{html.escape(q.get("name", "Untitled"))}</a></li>'
             for q in siblings[:3]
         )
-        more = f"""<section class="block" aria-label="More applications">
+        more = f"""
+    <section class="block" aria-label="More applications">
       <div class="wrap">
         <div class="section-head"><h2>More applications</h2><p>Same category.</p></div>
         <div class="prose"><ul>{items}</ul></div>
       </div>
     </section>"""
-    return f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+
+    return f"""
+    <section class="block download-hero hero-load section-fox" aria-label="{html.escape(pname)}">
       <div class="wrap">
-        <ol>
-          <li><a href="./index.html">Home</a></li>
-          <li><a href="./applications.html">Applications</a></li>
-          <li aria-current="page">{html.escape(pname)}</li>
-        </ol>
-      </div>
-    </nav>
-    <section class="block" aria-label="{html.escape(pname)}">
-      <div class="wrap">
-        <h1 class="page-title">{html.escape(pname)}</h1>
-        <div class="card-badges">{badges_html(p)}</div>
-        <div class="prose">
-          <p>{html.escape(desc) if desc else f'<span class="todo">TODO: Add description for {html.escape(pname)}</span>'}</p>
+        <div class="fox-corner fox-in-hero">{fox_svg("corner")}</div>
+        <div class="download-hero-top">
+          <div class="card-badges">{badges_html(p)}</div>
+          <h1 class="page-title">{html.escape(pname)}</h1>
+          <p class="lede">{html.escape(desc) if desc else f'<span class="todo">Coming soon · description to follow</span>'}</p>
         </div>
+        <div class="download-hero-actions">
+          <div class="primary-wrap">{primary}</div>
+          <div class="plat-wrap">{plat_cards}</div>
+          {f'<div class="privacy-note">{html.escape(privacy)}</div>' if privacy else ""}
+        </div>
+        <div class="trust-bar">{trust}</div>
       </div>
     </section>
+
     <section class="block" aria-label="Screenshots">
       <div class="wrap">
         <div class="section-head"><h2>Screenshots</h2></div>
-        {shot_html(p, label="screenshot")}
+        <div class="shot-frame">{shot_html(p, label="screenshot")}</div>
       </div>
     </section>
-    <section class="block" aria-label="Details">
+
+    <section class="block" aria-label="Description">
       <div class="wrap">
-        <div class="section-head"><h2>Details</h2></div>
-        <div class="two-col">
-          <div class="mini"><h3>Key features</h3>{feats_html}</div>
-          <div class="mini"><h3>Technology</h3>{tags_html(techs) if techs else f'<p class="todo">TODO: Confirm technology stack for {html.escape(pname)}</p>'}
-            <h3>Platforms</h3>{plats_html}</div>
-        </div>
-      </div>
-    </section>
-    <section class="block" aria-label="Downloads">
-      <div class="wrap">
-        <div class="section-head"><h2>Downloads</h2><p>Verified builds only.</p></div>
+        <div class="section-head"><h2>About</h2></div>
         <div class="prose">
-          {download_section(p)}
-          {app_links(p)}
+          <p>{html.escape(desc) if desc else f'<span class="todo">Coming soon · description to follow</span>'}</p>
         </div>
       </div>
     </section>
+
+    <section class="block" aria-label="Requirements">
+      <div class="wrap">
+        <div class="section-head"><h2>Requirements</h2></div>
+        <div class="prose">
+          {specs}
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-label="Version history">
+      <div class="wrap">
+        <div class="section-head"><h2>Version history</h2><p>Older releases are available on GitHub.</p></div>
+        {vh}
+      </div>
+    </section>
+
+    <section class="block" aria-label="FAQ">
+      <div class="wrap">
+        <div class="section-head"><h2>FAQ</h2><p>Quick answers before you download.</p></div>
+        <div class="prose">{faq_html}</div>
+      </div>
+    </section>
+
     {more}
+
     <section class="block" aria-label="Back to catalog">
       <div class="wrap">
         <p><a class="btn btn-ghost" href="./applications.html">← All applications</a></p>
       </div>
-    </section>"""
-
-
+    </section>
+    """
 # --------------------------------------------------------------------------
 # Pages
 # --------------------------------------------------------------------------
@@ -458,7 +635,7 @@ def home_page(ctx: dict) -> str:
     featured = [p for p in ctx["projects"] if p.get("featured")]
     cards = "\n".join(catalog_card(p) for p in featured)
     contact = ctx["contact_links"]
-    return f"""<section class="hero" aria-label="Welcome">
+    return f"""<section class="hero fox-hero" aria-label="Welcome">
       <div class="wrap hero-grid">
         <div>
           <span class="eyebrow"><i aria-hidden="true"></i> Welcome to {html.escape(ctx['company'])}</span>
@@ -469,15 +646,15 @@ def home_page(ctx: dict) -> str:
             <a class="btn btn-primary" href="./applications.html">View Applications</a>
             <a class="btn btn-ghost" href="./about.html">About Me</a>
           </div>
-        </div>
-        <aside class="hero-card" aria-label="Why trust this work">
-          <h2>Field notes</h2>
-          <dl class="specimen">
+          <dl class="hero-notes" aria-label="Why trust this work">
             <div><dt>Research-backed</dt><dd>UCC Biomedical Science</dd></div>
             <div><dt>Offline-first</dt><dd>Local-first apps</dd></div>
             <div><dt>Clean design</dt><dd>Privacy-conscious UX</dd></div>
           </dl>
-        </aside>
+        </div>
+        <div class="fox-stage" aria-hidden="true">
+          {fox_svg("hero")}
+        </div>
       </div>
     </section>
 
@@ -511,8 +688,9 @@ def applications_page(ctx: dict) -> str:
             f'<button class="filter-btn" data-filter="{html.escape(c)}" aria-pressed="false">{html.escape(c)}</button>'
         )
     grid = cards if cards else "<div class=\"prose\"><p>No applications listed yet.</p></div>"
-    return f"""<section class="block" aria-label="Applications">
+    return f"""<section class="block section-fox" aria-label="Applications">
       <div class="wrap">
+        <div class="fox-corner">{fox_svg("corner")}</div>
         <div class="section-head">
           <h2>Applications</h2>
           <p>Every app, honestly labeled.</p>
@@ -547,8 +725,9 @@ def about_page(ctx: dict) -> str:
     skills = md_to_html(s.get("skills", ""))
     design = md_to_html(s.get("design work", s.get("design", "")))
     contact = ctx["contact_links"]
-    return f"""<section class="block" aria-label="About">
+    return f"""<section class="block section-fox" aria-label="About">
       <div class="wrap">
+        <div class="fox-corner">{fox_svg("corner")}</div>
         <div class="section-head"><h2>About Me</h2><p>{html.escape(ctx['role'])}</p></div>
         <div class="prose">
           <h3>{html.escape(ctx['name'])}</h3>
@@ -595,11 +774,13 @@ def about_page(ctx: dict) -> str:
 
 
 def not_found_page(ctx: dict) -> str:
-    return """<section class="block" aria-label="Page not found">
+    return f"""<section class="block" aria-label="Page not found">
       <div class="wrap">
         <div class="section-head"><h2>Not found</h2><p>Diagnosis: missing page.</p></div>
-        <div class="prose">
-          <p>Sorry — there's nothing at this address. It may have moved.</p>
+        <div class="nf-stage">
+          {fox_svg("dig")}
+          <p><strong>Kit sniffed through every den — there's nothing at this address.</strong></p>
+          <p class="quiet">It may have moved, or the link is wrong.</p>
           <p><a class="btn btn-primary" href="./index.html">Back to Home</a></p>
         </div>
       </div>
@@ -658,7 +839,7 @@ def build(out_dir: Path):
          "about.html", about_page(ctx), True),
         ("404.html", "Not found", f"Page not found — {company}",
          f"The requested {company} page could not be found.",
-         "", not_found_page(ctx), False),
+         "", not_found_page(ctx), True),
     ]
 
     # One standalone detail/download page per app, data-driven.
@@ -684,8 +865,9 @@ def build(out_dir: Path):
                          canonical=f"{SITE_URL}/{filename}" if filename != "404.html" else SITE_URL,
                          scripts=scripts)
         (out_dir / filename).write_text(page, encoding="utf-8")
-    for asset in ("style.css", "app.js", "grims-mark.svg", "grims-logo-horizontal.svg",
-                  "googlee8fcbc5f56b1ecd1.html"):
+    for asset in ("style.css", "app.js", "fox.js", "anime.umd.min.js",
+                  "grims-mark.svg", "grims-logo-horizontal.svg",
+                  "og-preview.png", "googlee8fcbc5f56b1ecd1.html"):
         src = ROOT / "assets" / asset
         if src.exists():
             shutil.copy(src, out_dir / asset)

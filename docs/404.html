@@ -34,8 +34,63 @@
 <section class="block" aria-label="Page not found">
       <div class="wrap">
         <div class="section-head"><h2>Not found</h2><p>Diagnosis: missing page.</p></div>
-        <div class="prose">
-          <p>Sorry — there's nothing at this address. It may have moved.</p>
+        <div class="nf-stage">
+          <svg class="fox fox-dig" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
+      <title>Kit, the Grims Studio fox</title>
+      <g class="fx-tail">
+        <path d="M218 280 C 272 284 296 238 284 184" fill="none" stroke="#EF7A2C" stroke-width="30" stroke-linecap="round"/>
+        <circle cx="284" cy="184" r="16" fill="#FFE9D2"/>
+      </g>
+      <g class="fx-body">
+        <path d="M160 166 C 114 166 86 208 86 252 C 86 290 118 308 160 308 C 202 308 234 290 234 252 C 234 208 206 166 160 166 Z" fill="#FF8A3D"/>
+        <ellipse cx="160" cy="264" rx="50" ry="40" fill="#FFE9D2"/>
+      </g>
+      <g class="fx-paws">
+        <rect x="122" y="284" width="32" height="26" rx="13" fill="#FFD9B5" stroke="#EF7A2C" stroke-width="1.5"/>
+        <rect x="166" y="284" width="32" height="26" rx="13" fill="#FFD9B5" stroke="#EF7A2C" stroke-width="1.5"/>
+      </g>
+      <g class="fx-dirt">
+          <ellipse cx="160" cy="316" rx="78" ry="11" fill="#C89B6A"/>
+          <ellipse cx="118" cy="309" rx="15" ry="6" fill="#9A6E42"/>
+          <ellipse cx="205" cy="306" rx="11" ry="5" fill="#9A6E42"/>
+        </g>
+      <g class="fx-neck">
+        <g class="fx-head">
+          <g class="fx-ear fx-ear-l">
+            <path d="M120 64 L110 18 L156 46 Z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M124 54 L116 30 L148 46 Z" fill="#FFCFA8"/>
+          </g>
+          <g class="fx-ear fx-ear-r">
+            <path d="M200 64 L210 18 L164 46 Z" fill="#FF8A3D" stroke="#FF8A3D" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M196 54 L204 30 L172 46 Z" fill="#FFCFA8"/>
+          </g>
+          <path d="M160 52 C 116 52 94 82 94 114 C 94 150 124 170 160 170 C 196 170 226 150 226 114 C 226 82 204 52 160 52 Z" fill="#FF8A3D"/>
+          <path d="M160 104 C 134 104 118 120 118 138 C 118 158 138 170 160 170 C 182 170 202 158 202 138 C 202 120 186 104 160 104 Z" fill="#FFE9D2"/>
+          <g class="fx-eyes">
+            <g class="fx-eye fx-eye-l">
+              <ellipse cx="134" cy="100" rx="12" ry="13" fill="#FFFDF8"/>
+              <circle class="fx-pupil" cx="134" cy="103" r="5.5" fill="#3A2A21"/>
+              <circle cx="137" cy="96" r="2.2" fill="#FFFFFF"/>
+            </g>
+            <g class="fx-eye fx-eye-r">
+              <ellipse cx="186" cy="100" rx="12" ry="13" fill="#FFFDF8"/>
+              <circle class="fx-pupil" cx="186" cy="103" r="5.5" fill="#3A2A21"/>
+              <circle cx="189" cy="96" r="2.2" fill="#FFFFFF"/>
+            </g>
+          </g>
+          <g class="fx-squint">
+            <path d="M122 100 Q134 90 146 100" fill="none" stroke="#3A2A21" stroke-width="3.5" stroke-linecap="round"/>
+            <path d="M174 100 Q186 90 198 100" fill="none" stroke="#3A2A21" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+          <ellipse cx="112" cy="124" rx="9" ry="5" fill="#FFB3A7" opacity=".85"/>
+          <ellipse cx="208" cy="124" rx="9" ry="5" fill="#FFB3A7" opacity=".85"/>
+          <path d="M152 122 Q160 116 168 122 Q164 132 160 133 Q156 132 152 122 Z" fill="#3A2A21"/>
+          <path d="M160 133 L160 139 M148 141 Q160 150 172 141" fill="none" stroke="#3A2A21" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </g>
+      </g>
+    </svg>
+          <p><strong>Kit sniffed through every den — there's nothing at this address.</strong></p>
+          <p class="quiet">It may have moved, or the link is wrong.</p>
           <p><a class="btn btn-primary" href="./index.html">Back to Home</a></p>
         </div>
       </div>
@@ -53,6 +108,8 @@
       <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site</span>
     </div>
   </footer>
-
+  <script src="./anime.umd.min.js" defer></script>
+  <script src="./app.js" defer></script>
+  <script src="./fox.js" defer></script>
 </body>
 </html>
