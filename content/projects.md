@@ -37,7 +37,7 @@
 - repository: https://github.com/jaredselasiegallant-sudo/grimoire-astral-architect
 - release_notes: https://github.com/jaredselasiegallant-sudo/grimoire-astral-architect/releases
 - download: https://github.com/jaredselasiegallant-sudo/grimoire-astral-architect/releases/download/v0.2.0/Grimoire-Astral-Architect-win-x64.zip
-- version: v0.2.0
+- version: 0.2.0
 - requirements: Windows 10 or 11, no install needed (self-contained)
 
 ## Artwork Portfolio App
