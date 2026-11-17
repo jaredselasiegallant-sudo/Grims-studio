@@ -578,7 +578,7 @@ def app_detail_body(p: dict, siblings: list) -> str:
           <div class="plat-wrap">{plat_cards}</div>
           {f'<div class="privacy-note">{html.escape(privacy)}</div>' if privacy else ""}
         </div>
-        <div class="trust-bar">{trust}</div>
+        {trust}
       </div>
     </section>
 
@@ -684,7 +684,7 @@ def applications_page(ctx: dict) -> str:
     ordered = sorted(ctx["projects"], key=lambda p: STATUS_RANK.get((p.get("status") or "").strip().lower(), 1))
     cards = "\n".join(catalog_card(p) for p in ordered)
     categories = sorted({p.get("category", "").strip() for p in ordered if is_real(p.get("category"))})
-    statuses = [p.get("status", "").strip() for p in ordered if p.get("status")]
+    statuses = list(dict.fromkeys(p.get("status", "").strip() for p in ordered if p.get("status")))
     chips = ['<button class="filter-btn" data-filter="all" aria-pressed="true">All</button>']
     for c in categories:
         chips.append(
