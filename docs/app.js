@@ -1,4 +1,4 @@
-// Grims Studio — mobile nav toggle + search/category filters.
+// Grims Studio — mobile nav toggle + search / category / status filters.
 // Progressive enhancement; guards for pages without filter controls.
 (function () {
   const toggle = document.querySelector('.nav-toggle');
@@ -23,6 +23,7 @@
   const count = document.getElementById('result-count');
   const clear = document.getElementById('clear-filters');
   let activeCategory = 'all';
+  let activeStatus = 'all';
 
   function apply() {
     const q = (search ? search.value : '').trim().toLowerCase();
@@ -30,9 +31,11 @@
     cards.forEach((card) => {
       const hay = (card.dataset.search || '').toLowerCase();
       const cat = card.dataset.category || '';
+      const st = card.dataset.status || '';
       const matchQ = !q || hay.includes(q);
       const matchC = activeCategory === 'all' || cat === activeCategory;
-      const show = matchQ && matchC;
+      const matchS = activeStatus === 'all' || st === activeStatus;
+      const show = matchQ && matchC && matchS;
       card.hidden = !show;
       if (show) visible += 1;
     });
@@ -42,7 +45,15 @@
 
   buttons.forEach((btn) => {
     btn.addEventListener('click', () => {
-      activeCategory = btn.dataset.filter || 'all';
+      const f = btn.dataset.filter || 'all';
+      if (f.startsWith('cat:')) {
+        activeCategory = f.slice(4) || 'all';
+      } else if (f.startsWith('status:')) {
+        activeStatus = f.slice(7) || 'all';
+      } else {
+        activeCategory = 'all';
+        activeStatus = 'all';
+      }
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
       apply();
     });
@@ -52,6 +63,7 @@
   if (clear) clear.addEventListener('click', () => {
     if (search) search.value = '';
     activeCategory = 'all';
+    activeStatus = 'all';
     buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === 'all')));
     apply();
     if (search) search.focus();

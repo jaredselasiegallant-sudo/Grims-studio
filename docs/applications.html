@@ -26,7 +26,7 @@
         <span aria-hidden="true">☰</span>
       </button>
       <nav class="site-nav" id="primary-nav" aria-label="Primary">
-        <a href="./index.html">Home</a><a href="./applications.html" class="active" aria-current="page">Applications</a><a href="./about.html">About</a><a href="./about.html#contact" class="nav-cta">Contact</a>
+        <a href="./index.html">Home</a><a href="./applications.html" class="active" aria-current="page">Applications</a><a href="./studio.html">Studio</a><a href="./about.html">About</a><a href="./about.html#contact" class="nav-cta">Contact</a>
       </nav>
     </div>
   </header>
@@ -93,14 +93,14 @@
             <label for="app-search">Search apps</label>
             <input type="search" id="app-search" placeholder="Search apps, categories, tech…" autocomplete="off" />
           </div>
-          <div class="filter-row" role="group" aria-label="Filter by category">
-            <button class="filter-btn" data-filter="all" aria-pressed="true">All</button><button class="filter-btn" data-filter="Design" aria-pressed="false">Design</button><button class="filter-btn" data-filter="Education" aria-pressed="false">Education</button><button class="filter-btn" data-filter="Games" aria-pressed="false">Games</button><button class="filter-btn" data-filter="Media" aria-pressed="false">Media</button><button class="filter-btn" data-filter="Productivity" aria-pressed="false">Productivity</button>
+          <div class="filter-row" role="group" aria-label="Filter by category and status">
+            <button class="filter-btn" data-filter="all" aria-pressed="true">All</button><button class="filter-btn" data-filter="cat:Design" aria-pressed="false">Design</button><button class="filter-btn" data-filter="cat:Education" aria-pressed="false">Education</button><button class="filter-btn" data-filter="cat:Games" aria-pressed="false">Games</button><button class="filter-btn" data-filter="cat:Media" aria-pressed="false">Media</button><button class="filter-btn" data-filter="cat:Productivity" aria-pressed="false">Productivity</button><button class="filter-btn" data-filter="status:Active" aria-pressed="false">Active</button><button class="filter-btn" data-filter="status:Active" aria-pressed="false">Active</button><button class="filter-btn" data-filter="status:Completed" aria-pressed="false">Completed</button><button class="filter-btn" data-filter="status:In development" aria-pressed="false">In development</button><button class="filter-btn" data-filter="status:Planned" aria-pressed="false">Planned</button><button class="filter-btn" data-filter="status:Concept" aria-pressed="false">Concept</button><button class="filter-btn" data-filter="status:Concept" aria-pressed="false">Concept</button>
           </div>
           <button class="clear-btn" id="clear-filters" type="button">Clear filters</button>
         </div>
         <div class="grid" id="app-grid">
           
-        <article class="card project-card featured" id="pocketledger" data-category="Productivity" data-search="PocketLedger Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut. Ghana Cedi (GHS) default currency. Productivity Flutter Dart React Native SQLite  Active">
+        <article class="card project-card featured" id="pocketledger" data-category="Productivity" data-status="Active" data-search="PocketLedger Offline-first personal finance platform. Cross-platform, built with Flutter. Formerly named InnOut. Ghana Cedi (GHS) default currency. Productivity Flutter Dart React Native SQLite  Active">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">PO</div>
             <h3>PocketLedger</h3>
@@ -111,7 +111,7 @@
           <p><a class="btn btn-primary" href="./app-pocketledger.html">View app details →</a></p>
         </article>
 
-        <article class="card project-card featured" id="project-nexus" data-category="Media" data-search="Project Nexus Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack. Media Rust gtk4-rs Flatpak  Active">
+        <article class="card project-card featured" id="project-nexus" data-category="Media" data-status="Active" data-search="Project Nexus Full-screen living-room media hub for Fedora Linux. Native Rust + gtk4-rs GNOME Flatpak app, rewritten from an earlier FastAPI/web stack. Media Rust gtk4-rs Flatpak  Active">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">PN</div>
             <h3>Project Nexus</h3>
@@ -122,7 +122,7 @@
           <p><a class="btn btn-primary" href="./app-project-nexus.html">View app details →</a></p>
         </article>
 
-        <article class="card project-card" id="the-pink-whisk" data-category="Design" data-search="The Pink Whisk Commercial bakery website. Full UI design, layout architecture, and deployment strategy including pastry catalog, order/contact form, and custom-pastry photo upload. Design Penpot HTML CSS JavaScript Pastry catalog Shopping cart Checkout Contact/order page Completed">
+        <article class="card project-card" id="the-pink-whisk" data-category="Design" data-status="Completed" data-search="The Pink Whisk Commercial bakery website. Full UI design, layout architecture, and deployment strategy including pastry catalog, order/contact form, and custom-pastry photo upload. Design Penpot HTML CSS JavaScript Pastry catalog Shopping cart Checkout Contact/order page Completed">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">TP</div>
             <h3>The Pink Whisk</h3>
@@ -133,7 +133,7 @@
           <p><a class="btn btn-primary" href="./app-the-pink-whisk.html">View app details →</a></p>
         </article>
 
-        <article class="card project-card featured" id="grimoire-astral-architect" data-category="Games" data-search="Grimoire: Astral Architect Cozy base-builder / idle RPG with gesture-based spell casting, familiar bonding, and alchemical crafting. 100% offline game built with .NET 8, C#, WPF, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub. Games .NET 8 C# WPF SkiaSharp SQLite Gesture-based spell casting Familiar bonding Alchemical crafting 100% offline, no account or microtransactions In development">
+        <article class="card project-card featured" id="grimoire-astral-architect" data-category="Games" data-status="In development" data-search="Grimoire: Astral Architect Cozy base-builder / idle RPG with gesture-based spell casting, familiar bonding, and alchemical crafting. 100% offline game built with .NET 8, C#, WPF, SkiaSharp and SQLite, with automated CI/CD build and release workflows on GitHub. Games .NET 8 C# WPF SkiaSharp SQLite Gesture-based spell casting Familiar bonding Alchemical crafting 100% offline, no account or microtransactions In development">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">GA</div>
             <h3>Grimoire: Astral Architect</h3>
@@ -144,7 +144,7 @@
           <p><a class="btn btn-primary" href="./app-grimoire-astral-architect.html">View app details →</a></p>
         </article>
 
-        <article class="card project-card" id="artwork-portfolio-app" data-category="Design" data-search="Artwork Portfolio App Flutter gallery app with glassmorphic white/purple design, auth, upload, edit, and cross-platform sync. Design Flutter Dart  Planned">
+        <article class="card project-card" id="artwork-portfolio-app" data-category="Design" data-status="Planned" data-search="Artwork Portfolio App Flutter gallery app with glassmorphic white/purple design, auth, upload, edit, and cross-platform sync. Design Flutter Dart  Planned">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">AP</div>
             <h3>Artwork Portfolio App</h3>
@@ -155,7 +155,7 @@
           <p><a class="btn btn-primary" href="./app-artwork-portfolio-app.html">View app details →</a></p>
         </article>
 
-        <article class="card project-card" id="gamified-book-reader" data-category="Education" data-search="Gamified Book Reader Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader. Education Android  Concept">
+        <article class="card project-card" id="gamified-book-reader" data-category="Education" data-status="Concept" data-search="Gamified Book Reader Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader. Education Android  Concept">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">GB</div>
             <h3>Gamified Book Reader</h3>
@@ -166,7 +166,7 @@
           <p><a class="btn btn-primary" href="./app-gamified-book-reader.html">View app details →</a></p>
         </article>
 
-        <article class="card project-card" id="personal-ai-assistant" data-category="Productivity" data-search="Personal AI Assistant Linux PC + Android assistant that works with local files, with a growing companion mascot. Productivity Linux Android  Concept">
+        <article class="card project-card" id="personal-ai-assistant" data-category="Productivity" data-status="Concept" data-search="Personal AI Assistant Linux PC + Android assistant that works with local files, with a growing companion mascot. Productivity Linux Android  Concept">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">PA</div>
             <h3>Personal AI Assistant</h3>

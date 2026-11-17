@@ -232,6 +232,7 @@ def fox_svg(variant: str = "corner") -> str:
 NAV_ITEMS = [
     ("index.html", "Home"),
     ("applications.html", "Applications"),
+    ("studio.html", "Studio"),
     ("about.html", "About"),
 ]
 
@@ -372,10 +373,11 @@ def catalog_card(p: dict) -> str:
     techs = p.get("technologies", []) if isinstance(p.get("technologies"), list) else []
     feats = p.get("features", []) if isinstance(p.get("features"), list) else []
     featured = bool(p.get("featured"))
+    st = p.get("status", "").strip() if is_real(p.get("status")) else ""
     search_blob = " ".join([pname, desc, cat, " ".join(techs), " ".join(feats),
-                            p.get("status", "")])
+                            st])
     return f"""
-        <article class="card project-card{' featured' if featured else ''}" id="{slug}" data-category="{html.escape(cat)}" data-search="{html.escape(search_blob)}">
+        <article class="card project-card{' featured' if featured else ''}" id="{slug}" data-category="{html.escape(cat)}" data-status="{html.escape(st)}" data-search="{html.escape(search_blob)}">
           <div class="card-top">
             <div class="monogram" aria-hidden="true">{html.escape(monogram(pname))}</div>
             <h3>{html.escape(pname)}</h3>
@@ -682,11 +684,17 @@ def applications_page(ctx: dict) -> str:
     ordered = sorted(ctx["projects"], key=lambda p: STATUS_RANK.get((p.get("status") or "").strip().lower(), 1))
     cards = "\n".join(catalog_card(p) for p in ordered)
     categories = sorted({p.get("category", "").strip() for p in ordered if is_real(p.get("category"))})
-    filters = ['<button class="filter-btn" data-filter="all" aria-pressed="true">All</button>']
+    statuses = [p.get("status", "").strip() for p in ordered if p.get("status")]
+    chips = ['<button class="filter-btn" data-filter="all" aria-pressed="true">All</button>']
     for c in categories:
-        filters.append(
-            f'<button class="filter-btn" data-filter="{html.escape(c)}" aria-pressed="false">{html.escape(c)}</button>'
+        chips.append(
+            f'<button class="filter-btn" data-filter="cat:{html.escape(c)}" aria-pressed="false">{html.escape(c)}</button>'
         )
+    for st in statuses:
+        chips.append(
+            f'<button class="filter-btn" data-filter="status:{html.escape(st)}" aria-pressed="false">{html.escape(st)}</button>'
+        )
+    filters = chips
     grid = cards if cards else "<div class=\"prose\"><p>No applications listed yet.</p></div>"
     return f"""<section class="block section-fox" aria-label="Applications">
       <div class="wrap">
@@ -701,7 +709,7 @@ def applications_page(ctx: dict) -> str:
             <label for="app-search">Search apps</label>
             <input type="search" id="app-search" placeholder="Search apps, categories, tech…" autocomplete="off" />
           </div>
-          <div class="filter-row" role="group" aria-label="Filter by category">
+          <div class="filter-row" role="group" aria-label="Filter by category and status">
             {''.join(filters)}
           </div>
           <button class="clear-btn" id="clear-filters" type="button">Clear filters</button>
@@ -718,31 +726,65 @@ def applications_page(ctx: dict) -> str:
 
 
 def about_page(ctx: dict) -> str:
-    s = ctx["sections"]
-    story = md_to_html(s.get("about", ""))
-    research = md_to_html(s.get("research", ""))
-    leadership = md_to_html(s.get("leadership", ""))
-    skills = md_to_html(s.get("skills", ""))
-    design = md_to_html(s.get("design work", s.get("design", "")))
-    contact = ctx["contact_links"]
-    return f"""<section class="block section-fox" aria-label="About">
+    name = ctx["name"]; role = ctx["role"]; tagline = ctx["tagline"]
+    location = ctx["location"]; contact = ctx["contact_links"]
+    story = md_to_html(ctx["sections"].get("about", ""))
+    research = md_to_html(ctx["sections"].get("research", ""))
+    design = md_to_html(ctx["sections"].get("design work", ctx["sections"].get("design", "")))
+    return f"""
+    <section class="block section-fox" aria-label="About">
       <div class="wrap">
-        <div class="fox-corner">{fox_svg("corner")}</div>
-        <div class="section-head"><h2>About Me</h2><p>{html.escape(ctx['role'])}</p></div>
+        <div class="fox-corner">{fox_svg('corner')}</div>
+        <div class="section-head"><h2>About</h2><p>{html.escape(tagline)}</p></div>
         <div class="prose">
-          <h3>{html.escape(ctx['name'])}</h3>
-          <p class="quiet">{html.escape(ctx['location'])}</p>
+          <h3>{role}</h3>
+          <p class="quiet">{html.escape(location)}</p>
+          {story}
         </div>
       </div>
     </section>
-
-    <section class="block" aria-label="Story">
+    <section class="block" aria-label="Quick reference">
       <div class="wrap">
-        <div class="section-head"><h2>Story</h2><p>Clear Diagnosis, Clean Cure.</p></div>
-        <div class="prose">{story}</div>
+        <div class="section-head"><h2>Quick reference</h2></div>
+        <div class="two-col">
+          <div class="mini"><h3>Research</h3>{research if research else '<p class="todo">TODO: Add research details.</p>'}</div>
+          <div class="mini"><h3>Design work</h3>{design if design else '<p class="todo">TODO: Add design examples.</p>'}</div>
+        </div>
       </div>
     </section>
+    <section class="block" id="contact" aria-label="Contact">
+      <div class="wrap">
+        <div class="section-head"><h2>Contact</h2><p>Direct line, no forms.</p></div>
+        <div class="prose contact-box">{''.join(contact) if contact else "<p class='todo'>TODO: Add email and LinkedIn links.</p>"}</div>
+      </div>
+    </section>"""
 
+def studio_page(ctx: dict) -> str:
+    name = ctx["name"]; company = ctx["company"]; role = ctx["role"]
+    tagline = ctx["tagline"]; location = ctx["location"]
+    email = ctx["email"]; socials = ctx["socials"]
+    sections = ctx["sections"]
+    contact = ctx["contact_links"]
+    story = md_to_html(sections.get("about", ""))
+    research = md_to_html(sections.get("research", ""))
+    leadership = md_to_html(sections.get("leadership", ""))
+    skills = md_to_html(sections.get("skills", ""))
+    design = md_to_html(sections.get("design work", sections.get("design", "")))
+    return f"""
+    <section class="block section-fox" aria-label="Studio">
+      <div class="wrap">
+        <div class="fox-corner">{fox_svg('corner')}</div>
+        <div class="section-head">
+          <h2>{html.escape(role)}</h2>
+          <p>{html.escape(tagline)}</p>
+        </div>
+        <div class="prose">
+          <h3>{name}</h3>
+          <p class="quiet">{html.escape(location)}</p>
+          {story}
+        </div>
+      </div>
+    </section>
     <section class="block" aria-label="Research">
       <div class="wrap">
         <div class="section-head"><h2>Research</h2><p>BSc Biomedical Science, 2026, UCC.</p></div>
@@ -752,25 +794,23 @@ def about_page(ctx: dict) -> str:
         </div>
       </div>
     </section>
-
-    <section class="block" aria-label="Skills and design work">
+    <section class="block" aria-label="Skills + design">
       <div class="wrap">
         <div class="section-head"><h2>Skills &amp; Design</h2><p>Tools of the trade.</p></div>
         <div class="two-col">
           <div class="mini"><h3>Skills</h3>{skills if skills else '<p class="todo">TODO: Add skills.</p>'}</div>
-          <div class="mini"><h3>Design work</h3>{design if design else '<p class="todo">TODO: Add design examples.</p>'}</div>
+          <div class="mini"><h3>Design Work</h3>{design if design else '<p class="todo">TODO: Add design examples.</p>'}</div>
         </div>
       </div>
     </section>
-
     <section class="block" id="contact" aria-label="Contact">
       <div class="wrap">
         <div class="section-head"><h2>Contact</h2><p>Direct line, no forms.</p></div>
-        <div class="prose contact-box">
-          {''.join(contact) if contact else "<p class=\"todo\">TODO: Add email and LinkedIn links.</p>"}
-        </div>
+        <div class="prose contact-box">{''.join(contact) if contact else "<p class='todo'>TODO: Add email and LinkedIn links.</p>"}</div>
       </div>
     </section>"""
+
+
 
 
 def not_found_page(ctx: dict) -> str:
@@ -834,6 +874,9 @@ def build(out_dir: Path):
         ("applications.html", "Applications", f"Applications — {company}",
          f"Browse all {company} applications: offline-first apps, games, and design work by {name}.",
          "applications.html", applications_page(ctx), True),
+        ("studio.html", "Studio", f"{company} — {tagline}",
+         f"{company}: {tagline} Offline-first, privacy-conscious apps by {name}, {role}.",
+         "studio.html", studio_page(ctx), True),
         ("about.html", "About", f"About {name} — {company}",
          f"About {name}, {role} based in {location}: biomedical research, leadership, skills, and contact.",
          "about.html", about_page(ctx), True),

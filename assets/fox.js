@@ -122,7 +122,10 @@
 
   function startAmbient() {
     anims.tail = ambientTail();
-    animate(body, { scaleY: 1.02, duration: 3400, ease: 'inOutSine', loop: true, alternate: true });
+    // Idle "breathe": a slow inhale/exhale so the fox feels alive at rest.
+    anims.bodyBreathe = animate(body, {
+      scaleY: [1.0, 1.035], duration: 3600, ease: 'inOutSine', loop: true, alternate: true
+    });
     scheduleBlink();
     scheduleTwitch();
     scheduleTilt();
