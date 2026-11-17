@@ -637,45 +637,96 @@ def home_page(ctx: dict) -> str:
     featured = [p for p in ctx["projects"] if p.get("featured")]
     cards = "\n".join(catalog_card(p) for p in featured)
     contact = ctx["contact_links"]
-    return f"""<section class="hero fox-hero" aria-label="Welcome">
-      <div class="wrap hero-grid">
+    first = featured[0] if featured else None
+    first_route = app_route(first) if first else ""
+    if first:
+        tile_apps_link = '<p class="lede"><strong>' + html.escape(first["name"]) + '</strong> — currently shipped and servicing diagnostics. <a class="btn btn-ghost-outline" href="./' + first_route + '.html">Open · ' + html.escape(first["name"]) + '</a></p>'
+    else:
+        tile_apps_link = '<p class="lede">No applications shipped yet.</p>'
+    return f"""
+    <section class="bento" aria-label="Grims Studio">
+      <div class="bento-banner">
         <div>
-          <span class="eyebrow"><i aria-hidden="true"></i> Welcome to {html.escape(ctx['company'])}</span>
-          <h1>{html.escape(ctx['company'])}</h1>
-          <p class="tagline">“{html.escape(ctx['tagline'])}”</p>
-          <p class="lede">Hello — I'm {html.escape(ctx['name'])}, a biomedical sciences researcher and lead developer. {html.escape(ctx['company'])} builds offline-first, privacy-conscious apps with scientific precision: diagnosing real-world friction and engineering targeted, durable cures.</p>
+          <span class="eyebrow"><i aria-hidden="true"></i> SYSTEM STATUS: DIAGNOSTIC READY</span>
+          <h1 class="bento-tile-title">Grims Studio<small class="kv">{html.escape(ctx['company'])}</small></h1>
+          <p class="lede">{html.escape(ctx['tagline'])}. I am {html.escape(ctx['name'])}, a biomedical sciences researcher and lead developer. {html.escape(ctx['company'])} builds offline-first, privacy-conscious applications with scientific precision: diagnosing real-world friction and engineering targeted, durable cures.</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="./applications.html">View Applications</a>
-            <a class="btn btn-ghost" href="./about.html">About Me</a>
+            <a class="btn btn-primary magnet-target" href="./applications.html">View Applications</a>
+            <a class="btn btn-ghost-outline" href="./about.html">About Me</a>
           </div>
-          <dl class="hero-notes" aria-label="Why trust this work">
+          <div class="home-notes" aria-label="Why trust this work">
             <div><dt>Research-backed</dt><dd>UCC Biomedical Science</dd></div>
-            <div><dt>Offline-first</dt><dd>Local-first apps</dd></div>
-            <div><dt>Clean design</dt><dd>Privacy-conscious UX</dd></div>
-          </dl>
+            <div><dt>Offline-first</dt><dd>Local-first applications</dd></div>
+            <div><dt>Zero telemetry</dt><dd>Privacy by default</dd></div>
+          </div>
         </div>
         <div class="fox-stage" aria-hidden="true">
           {fox_svg("hero")}
         </div>
       </div>
-    </section>
 
-    <section class="block" aria-label="Featured applications">
-      <div class="wrap">
-        <div class="section-head"><h2>Featured Apps</h2><p>Start here.</p></div>
-        <div class="grid">
-          {cards}
+      <div class="bento-tile glossy-border bento-study" id="tile-mascot">
+        <div class="bento-tile-head">
+          <span class="bento-tile-num">02</span>
+          <div>
+            <h3 class="bento-tile-title">Kit, the Grims Studio fox</h3>
+            <p class="bento-tile-desc">A reactive companion for the diagnosis.</p>
+          </div>
+        </div>
+        <div class="mascot-stage" id="mascot-canvas">
+          <div class="dot" style="width:14px;height:14px;background:#00E5A0"></div>
+          {fox_svg("hero")}
+        </div>
+        <div class="toggle-wrap">
+          <button class="toggle-btn" id="mode-toggle" type="button" aria-pressed="false">Lab Mode</button>
         </div>
       </div>
-    </section>
 
-    <section class="block" aria-label="Contact">
-      <div class="wrap">
-        <div class="section-head"><h2>Say hello</h2><p>Direct line, no forms.</p></div>
-        <div class="prose contact-box">
-          {''.join(contact) if contact else "<p>No public contact listed yet.</p>"}
+      <div class="bento-tile glossy-border" id="tile-apps">
+        <div class="bento-tile-head">
+          <span class="bento-tile-num">03</span>
+          <div>
+            <h3 class="bento-tile-title">Live application</h3>
+            <p class="bento-tile-desc">The one currently in field.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p class="lede">{tile_apps_link}</p>
         </div>
       </div>
+
+      <div class="bento-tile glossy-border" id="tile-pillars">
+        <div class="bento-tile-head">
+          <span class="bento-tile-num">04</span>
+          <div>
+            <h3 class="bento-tile-title">Core pillars</h3>
+            <p class="bento-tile-desc">Non-negotiable commitments.</p>
+          </div>
+        </div>
+        <div class="pillars">
+          <div class="pillar"><span class="pillar-icon" aria-hidden="true">●</span><h3>Local-first</h3><p>Apps run fully on your device; offline first.</p></div>
+          <div class="pillar"><span class="pillar-icon" aria-hidden="true">◈</span><h3>Biomedical precision</h3><p>Scientific method, clothed in software.</p></div>
+          <div class="pillar"><span class="pillar-icon" aria-hidden="true">◈</span><h3>Zero telemetry</h3><p>No tracking. No accounts. No telemetry.</p></div>
+        </div>
+      </div>
+
+      <section class="block" aria-label="Featured applications">
+        <div class="wrap">
+          <div class="section-head"><h2>Featured applications</h2><p>Start here.</p></div>
+          <div class="grid">
+            {cards}
+          </div>
+        </div>
+      </section>
+
+      <section class="block" aria-label="Contact">
+        <div class="wrap">
+          <div class="section-head"><h2>Say hello</h2><p>Direct line, no forms.</p></div>
+          <div class="prose contact-box">
+            {''.join(contact) if contact else "<p>No public contact listed yet.</p>"}
+          </div>
+        </div>
+      </section>
     </section>"""
 
 
