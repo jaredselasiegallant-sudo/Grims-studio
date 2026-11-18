@@ -19,7 +19,7 @@
   }
 
   // ---------- magnetic buttons (pull toward the cursor) ----------
-  const magnets = Array.from(document.querySelectorAll('.btn-magnet'));
+  const magnets = Array.from(document.querySelectorAll('.btn-magnet, .magnet-target'));
   if (magnets.length) {
     let mx = 0, my = 0, raf = 0;
     const step = () => {

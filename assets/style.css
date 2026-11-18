@@ -520,7 +520,22 @@ a:hover { color: var(--cyan); }
 .hero-load { opacity: 0; animation: heroIn .9s var(--ease-out-3) forwards; }
 @keyframes heroIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
-.magnet-target { will-change: transform; }
+.magnet-target {
+  cursor: none;
+  position: relative;
+  transition: transform var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+}
+.magnet-target[data-mx] { transform: translate(calc(var(--mx) * 1px), calc(var(--my) * 1px)); }
+.magnet-target[data-mx]::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(255,77,45,0.5), transparent 60%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-mid);
+}
 
 /* spotlight border: follows the cursor, glows nearby cards */
 .spotlight {
