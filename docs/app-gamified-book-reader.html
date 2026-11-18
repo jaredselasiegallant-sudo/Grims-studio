@@ -8,28 +8,16 @@
   <meta property="og:title" content="Gamified Book Reader — Grims Studio" />
   <meta property="og:description" content="Gamified Book Reader (Concept) by Grims Studio: Android reading app with gamification, inspired by Duolingo, Kuro Reader, and Yak Reader." />
   <meta property="og:type" content="website" />
-  <!-- TODO: supply an Open Graph preview image as docs/og-preview.png and replace the content below -->
   <meta property="og:image" content="./og-preview.png" />
+  <style>body{opacity:0;transition:opacity .34s ease}</style>
+  <link rel="stylesheet" href="./story.css" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
   <link rel="canonical" href="https://jaredselasiegallant-sudo.github.io/Grims-studio/app-gamified-book-reader.html" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-<header class="site-header">
-    <div class="header-inner">
-      <a class="wordmark" href="./index.html" aria-label="Grims Studio home">
-        <img class="wordmark-logo" src="./grims-mark.svg" alt="" width="34" height="34" />
-        <span>Grims Studio<small>Clear Diagnosis, Clean Cure.</small></span>
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu">
-        <span aria-hidden="true">☰</span>
-      </button>
-      <nav class="site-nav" id="primary-nav" aria-label="Primary">
-        <a href="./index.html">Home</a><a href="./applications.html" class="active" aria-current="page">Applications</a><a href="./studio.html">Studio</a><a href="./about.html">About</a><a href="./about.html#contact" class="nav-cta">Contact</a>
-      </nav>
-    </div>
-  </header>
+
   <main id="main">
 
     <section class="block download-hero hero-load section-fox" aria-label="Gamified Book Reader">
@@ -146,6 +134,19 @@
     </section>
     
   </main>
+
+<div class="story-foot">
+  <a class="story-foot__link" href="./index.html#q1-quiet" aria-label="Back to the story">
+    <svg class="story-foot__fox" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><ellipse cx="12" cy="5" rx="3" ry="3.2" fill="#FF8A3D"/><path d="M10.6 5.6L8.7 3.4c-.4.4-.4 1 .1 1.4l1 1.2c.4-.3.7-.1.8.3"/><path d="M13.4 5.6L15.3 3.4c.4.4.3 1-.2 1.4l-1 1.2c-.4-.3-.7-.1-.8.3"/><circle cx="9" cy="12" r="1.8" fill="#00E5A0"/><circle cx="15" cy="12" r="1.8" fill="#00E5A0"/><path d="M10.8 13.6h2.4"/><path d="M11.6 15.2h1.2"/><path d="M12 17q-1.2 1.6-2.4 2.6"/></svg>
+    <span>Back to the story</span>
+  </a>
+  <a class="story-foot__next" href="./studio.html" aria-label="Continue to The Studio">
+    <span>The Studio</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#EDEAE2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 6l6 6-6 6"/>
+    </svg>
+  </a>
+</div>
 <footer class="footer">
     <div class="wrap footer-inner">
       <img class="footer-logo" src="./grims-logo-horizontal.svg" alt="Grims Studio" height="30" />
@@ -158,8 +159,7 @@
       <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site</span>
     </div>
   </footer>
-  <script src="./anime.umd.min.js" defer></script>
-  <script src="./app.js" defer></script>
-  <script src="./fox.js" defer></script>
+  <script src="././transitions.js" defer></script>
+
 </body>
 </html>

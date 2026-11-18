@@ -9,6 +9,16 @@ Suitable for GitHub Pages (branch source: main + /docs).
 Usage:
     python3 build.py [--out docs]
 """
+import sys
+
+# PyYAML ships in the system site-packages; ensure it is importable even when
+# build.py is run from a minimal virtualenv that does not carry it.
+if "yaml" not in sys.modules:
+    _sys_path = sys.path
+    _candidate = "/usr/lib64/python3.14/site-packages"
+    if _candidate not in _sys_path:
+        sys.path.insert(0, _candidate)
+
 import argparse
 import html
 import re
@@ -283,17 +293,70 @@ def site_footer(company: str, email: str, socials: dict) -> str:
   </footer>"""
 
 
+def fox_small() -> str:
+    """Compact 24x24 fox glyph: head, dot eyes, small nose. Used in the
+    inner-page story foot."""
+    return (
+        '<svg class="story-foot__fox" viewBox="0 0 24 24" fill="none" '
+        'xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+        '<ellipse cx="12" cy="5" rx="3" ry="3.2" fill="#FF8A3D"/>'
+        '<path d="M10.6 5.6L8.7 3.4c-.4.4-.4 1 .1 1.4l1 1.2c.4-.3.7-.1.8.3"/>'
+        '<path d="M13.4 5.6L15.3 3.4c.4.4.3 1-.2 1.4l-1 1.2c-.4-.3-.7-.1-.8.3"/>'
+        '<circle cx="9" cy="12" r="1.8" fill="#00E5A0"/>'
+        '<circle cx="15" cy="12" r="1.8" fill="#00E5A0"/>'
+        '<path d="M10.8 13.6h2.4"/><path d="M11.6 15.2h1.2"/>'
+        '<path d="M12 17q-1.2 1.6-2.4 2.6"/></svg>'
+    )
+
+
+def story_chapter_foot(*, next_href: str, next_label: str = "") -> str:
+    """Slim spine for every non-story page: back to the beginning of the story,
+    and a continue-arrow to the next chapter.
+
+    Covers the missing top bar: it lives as a small fixed bar at the bottom of
+    each inner page, always within thumb reach.
+    """
+    return f"""
+<div class="story-foot">
+  <a class="story-foot__link" href="./index.html#q1-quiet" aria-label="Back to the story">
+    {fox_small()}
+    <span>Back to the story</span>
+  </a>
+  <a class="story-foot__next" href="{html.escape(next_href)}" aria-label="Continue to {html.escape(next_label)}">
+    <span>{next_label}</span>
+    <svg viewBox="0 0 24 24" fill="none" stroke="#EDEAE2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M9 6l6 6-6 6"/>
+    </svg>
+  </a>
+</div>"""
+
+
 def base_page(*, title: str, description: str, company: str, tagline: str,
               email: str, socials: dict, active: str, body: str,
-              canonical: str, scripts: bool = True) -> str:
-    # Order matters: anime (lib) -> app.js (nav/search) -> fox.js (mascot rig).
+              canonical: str, scripts: bool = True, foot: str = "",
+              page_fade: bool = False, header: bool = True) -> str:
+    # scripts: True -> the default trio (anime, app.js, fox.js);
+    #          list/tuple -> only those scripts (used by the story page).
+    # foot: inner-page spine rendered inside <main> after {body}.
+    # page_fade: inject a one-line body-fade so hard navs read as one world
+    #            shifting. header=False on the story page (no top nav).
     scripts_html = ""
-    if scripts:
-        scripts_html = (
+    if isinstance(scripts, (list, tuple)):
+        script_tags = "".join(
+            f'  <script src="./{html.escape(str(s))}" defer></script>\n' for s in scripts
+        )
+        scripts_html = script_tags
+    elif scripts:
+        script_tags = (
             '  <script src="./anime.umd.min.js" defer></script>\n'
             '  <script src="./app.js" defer></script>\n'
             '  <script src="./fox.js" defer></script>'
         )
+        scripts_html = script_tags
+    head_extra = ""
+    if page_fade:
+        head_extra = '  <style>body{opacity:0;transition:opacity .34s ease}</style>\n'
+    header_html = site_header(company, tagline, email, active) if header else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -304,18 +367,19 @@ def base_page(*, title: str, description: str, company: str, tagline: str,
   <meta property="og:title" content="{html.escape(title)}" />
   <meta property="og:description" content="{html.escape(description)}" />
   <meta property="og:type" content="website" />
-  <!-- TODO: supply an Open Graph preview image as docs/og-preview.png and replace the content below -->
   <meta property="og:image" content="./og-preview.png" />
+{head_extra}  <link rel="stylesheet" href="./story.css" />
   <link rel="stylesheet" href="./style.css" />
   <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
   <link rel="canonical" href="{html.escape(canonical)}" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-{site_header(company, tagline, email, active)}
+{header_html}
   <main id="main">
 {body}
   </main>
+{foot}
 {site_footer(company, email, socials)}
 {scripts_html}
 </body>
@@ -633,101 +697,90 @@ def app_detail_body(p: dict, siblings: list) -> str:
 # Pages
 # --------------------------------------------------------------------------
 
-def home_page(ctx: dict) -> str:
-    featured = [p for p in ctx["projects"] if p.get("featured")]
-    cards = "\n".join(catalog_card(p) for p in featured)
-    contact = ctx["contact_links"]
-    first = featured[0] if featured else None
-    first_route = app_route(first) if first else ""
-    if first:
-        tile_apps_link = '<p class="lede"><strong>' + html.escape(first["name"]) + '</strong> — currently shipped and servicing diagnostics. <a class="btn btn-ghost-outline" href="./' + first_route + '.html">Open · ' + html.escape(first["name"]) + '</a></p>'
-    else:
-        tile_apps_link = '<p class="lede">No applications shipped yet.</p>'
+def home_page(ctx: dict) -> str:  # noqa: C901
+    """Scroll-driven storytelling homepage. The fox is the silent narrator."""
+    email = ctx["email"]
+    chapters = [
+        ("q1-quiet", "The Beginning", "The Quiet World",
+         "A calm world waiting. For now, the quiet is the whole story.",
+         "Then one small breath, and everything changes.",
+         "Begin >", "#q2-us", "q2-us", "What We Make"),
+        ("q2-us", "The Beginning of Us", "Who We Are",
+         "Medical science meets engineering.",
+         "Offline-first tools that put you back in control.",
+         "Meet the team >", "./about.html", "q3-make", "What We Make"),
+        ("q3-make", "The Work", "What We Make",
+         "Apps built to last, on purpose.",
+         "Offline-first apps, games, and design work for real lives.",
+         "See our work >", "./applications.html", "q4-studio", "The Studio"),
+        ("q4-studio", "The Space", "The Studio",
+         "Where biomedical science meets clean code.",
+         "Lead development, design, and the craft between a diagnosis and a cure.",
+         "Visit the studio >", "./studio.html", "q5-end", "The Note"),
+        ("q5-end", "The Note", "The Story Continues",
+         "The ending that keeps going.",
+         "Diagnosis. Cure. Something built to last. Follow up.",
+         "Follow up >", "mailto:" + html.escape(email), None, None),
+    ]
+
+    def svg(path, stroke="#EDEAE2"):
+        return (
+            '<svg viewBox="0 0 24 24" aria-hidden="true">'
+            f'<path d="{path}" fill="none" stroke="{stroke}" '
+            'stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
+            "</svg>"
+        )
+
+    def chapter(c, hero=False):
+        cid, eyebrow, heading, sub, pitch, cta_label, cta_href, next_id, next_label = c
+        fx = fox_svg(variant="hero")
+        parts = []
+        if cid != "q1-quiet":
+            parts.append(
+                '<a class="back" href="#q1-quiet">' + svg("M15 18l-6-6 6-6")
+                + "<span>Back to the quiet</span></a>"
+            )
+        if next_id:
+            parts.append(
+                '<a class="next" href="#' + html.escape(next_id) + '">'
+                + svg("M9 6l6 6-6 6")
+                + "<span>" + html.escape(next_label) + " →</span></a>"
+            )
+        nav = ""
+        if parts:
+            nav = '<div class="chapter-nav">' + "".join(parts) + "</div>"
+        cta = '<a class="lead-btn" href="' + html.escape(cta_href) + '">' + html.escape(cta_label) + "</a>"
+        return f"""
+      <section class="chapter{' chapter--hero' if hero else ''}"
+               id="{cid}" data-chapter="{cid}">
+        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene" data-parallax="0.14" data-glow></div>
+        <div class="scene" data-parallax="0.22"></div>
+        <div class="fox-stage">{fx}</div>
+        <header class="chapter-head">
+          <p class="eyebrow">{html.escape(eyebrow)}</p>
+          <h1>{html.escape(heading)}</h1>
+          <p class="pitch">{html.escape(sub)}</p>
+        </header>
+        <p class="lede"><strong>{html.escape(pitch)}</strong></p>
+        {nav}
+        {cta}
+      </section>"""
+
+    acts = "".join(chapter(c, hero=(c[0] == "q1-quiet")) for c in chapters)
+    dots = "".join(
+        '<button class="marker" data-marker="{0}" aria-label="{1}"></button>'.format(c[0], c[1])
+        for c in chapters
+    )
     return f"""
-    <section class="bento" aria-label="Grims Studio">
-      <div class="bento-banner">
-        <div>
-          <span class="eyebrow"><i aria-hidden="true"></i> SYSTEM STATUS: DIAGNOSTIC READY</span>
-          <h1 class="bento-tile-title">Grims Studio<small class="kv">{html.escape(ctx['company'])}</small></h1>
-          <p class="lede">{html.escape(ctx['tagline'])}. I am {html.escape(ctx['name'])}, a biomedical sciences researcher and lead developer. {html.escape(ctx['company'])} builds offline-first, privacy-conscious applications with scientific precision: diagnosing real-world friction and engineering targeted, durable cures.</p>
-          <div class="hero-actions">
-            <a class="btn btn-primary magnet-target" href="./applications.html">View Applications</a>
-            <a class="btn btn-ghost-outline" href="./about.html">About Me</a>
-          </div>
-          <div class="home-notes" aria-label="Why trust this work">
-            <div><dt>Research-backed</dt><dd>UCC Biomedical Science</dd></div>
-            <div><dt>Offline-first</dt><dd>Local-first applications</dd></div>
-            <div><dt>Zero telemetry</dt><dd>Privacy by default</dd></div>
-          </div>
-        </div>
-        <div class="fox-stage" aria-hidden="true">
-          {fox_svg("hero")}
-        </div>
+    <div class="story-page">
+      <div class="story-wrap">
+        <div class="scene" data-parallax="0.00" aria-hidden="true"></div>
+        {acts}
+        <div class="marker-track">{dots}</div>
       </div>
-
-      <div class="bento-tile glossy-border bento-study" id="tile-mascot">
-        <div class="bento-tile-head">
-          <span class="bento-tile-num">02</span>
-          <div>
-            <h3 class="bento-tile-title">Kit, the Grims Studio fox</h3>
-            <p class="bento-tile-desc">A reactive companion for the diagnosis.</p>
-          </div>
-        </div>
-        <div class="mascot-stage" id="mascot-canvas">
-          <div class="dot" style="width:14px;height:14px;background:#00E5A0"></div>
-          {fox_svg("hero")}
-        </div>
-        <div class="toggle-wrap">
-          <button class="toggle-btn" id="mode-toggle" type="button" aria-pressed="false">Lab Mode</button>
-        </div>
-      </div>
-
-      <div class="bento-tile glossy-border" id="tile-apps">
-        <div class="bento-tile-head">
-          <span class="bento-tile-num">03</span>
-          <div>
-            <h3 class="bento-tile-title">Live application</h3>
-            <p class="bento-tile-desc">The one currently in field.</p>
-          </div>
-        </div>
-        <div class="prose">
-          <p class="lede">{tile_apps_link}</p>
-        </div>
-      </div>
-
-      <div class="bento-tile glossy-border" id="tile-pillars">
-        <div class="bento-tile-head">
-          <span class="bento-tile-num">04</span>
-          <div>
-            <h3 class="bento-tile-title">Core pillars</h3>
-            <p class="bento-tile-desc">Non-negotiable commitments.</p>
-          </div>
-        </div>
-        <div class="pillars">
-          <div class="pillar"><span class="pillar-icon" aria-hidden="true">●</span><h3>Local-first</h3><p>Apps run fully on your device; offline first.</p></div>
-          <div class="pillar"><span class="pillar-icon" aria-hidden="true">◈</span><h3>Biomedical precision</h3><p>Scientific method, clothed in software.</p></div>
-          <div class="pillar"><span class="pillar-icon" aria-hidden="true">◈</span><h3>Zero telemetry</h3><p>No tracking. No accounts. No telemetry.</p></div>
-        </div>
-      </div>
-
-      <section class="block" aria-label="Featured applications">
-        <div class="wrap">
-          <div class="section-head"><h2>Featured applications</h2><p>Start here.</p></div>
-          <div class="grid">
-            {cards}
-          </div>
-        </div>
-      </section>
-
-      <section class="block" aria-label="Contact">
-        <div class="wrap">
-          <div class="section-head"><h2>Say hello</h2><p>Direct line, no forms.</p></div>
-          <div class="prose contact-box">
-            {''.join(contact) if contact else "<p>No public contact listed yet.</p>"}
-          </div>
-        </div>
-      </section>
-    </section>"""
+    </div>
+    """
 
 
 def applications_page(ctx: dict) -> str:
@@ -919,21 +972,32 @@ def build(out_dir: Path):
     }
 
     pages = [
+        # Home: the story. No top bar, no foot, body fades in on load.
         ("index.html", "Home", f"{company} — {tagline} {name}",
          f"{company}: {tagline} Offline-first, privacy-conscious apps by {name}, {role}.",
-         "index.html", home_page(ctx), True),
+         "index.html", home_page(ctx), ["./story.js"], "",
+         False, False),
+        # Inner pages: a slim spine replaces the missing top bar.
         ("applications.html", "Applications", f"Applications — {company}",
          f"Browse all {company} applications: offline-first apps, games, and design work by {name}.",
-         "applications.html", applications_page(ctx), True),
+         "applications.html", applications_page(ctx), ["./transitions.js"],
+         story_chapter_foot(next_href="./studio.html", next_label="The Studio"),
+         True, False),
         ("studio.html", "Studio", f"{company} — {tagline}",
          f"{company}: {tagline} Offline-first, privacy-conscious apps by {name}, {role}.",
-         "studio.html", studio_page(ctx), True),
+         "studio.html", studio_page(ctx), ["./transitions.js"],
+         story_chapter_foot(next_href="./index.html#q5-end", next_label="The Note"),
+         True, False),
         ("about.html", "About", f"About {name} — {company}",
          f"About {name}, {role} based in {location}: biomedical research, leadership, skills, and contact.",
-         "about.html", about_page(ctx), True),
+         "about.html", about_page(ctx), ["./transitions.js"],
+         story_chapter_foot(next_href="./applications.html", next_label="What We Make"),
+         True, False),
         ("404.html", "Not found", f"Page not found — {company}",
          f"The requested {company} page could not be found.",
-         "", not_found_page(ctx), True),
+         "", not_found_page(ctx), ["./transitions.js"],
+         story_chapter_foot(next_href="./index.html#q1-quiet", next_label="Continue"),
+         True, False),
     ]
 
     # One standalone detail/download page per app, data-driven.
@@ -948,20 +1012,24 @@ def build(out_dir: Path):
         pages.append(
             (app_route(p), pname, f"{pname} — {company}",
              f"{pname} ({p.get('status', 'status TBD')}) by {company}: {desc[:140]}",
-             "applications.html", app_detail_body(p, siblings), True),
+             "applications.html", app_detail_body(p, siblings), ["./transitions.js"],
+             story_chapter_foot(next_href="./studio.html", next_label="The Studio"),
+             True, False),
         )
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    for filename, _label, title, desc, active, body, scripts in pages:
-        page = base_page(title=title, description=desc, company=company,
-                         tagline=tagline, email=email, socials=socials,
-                         active=active, body=body,
-                         canonical=f"{SITE_URL}/{filename}" if filename != "404.html" else SITE_URL,
-                         scripts=scripts)
+    for filename, _label, title, desc, active, body, scripts, foot, page_fade, header in pages:
+        page = base_page(
+            title=title, description=desc, company=company,
+            tagline=tagline, email=email, socials=socials,
+            active=active, body=body,
+            canonical=f"{SITE_URL}/{filename}" if filename != "404.html" else SITE_URL,
+            scripts=scripts, foot=foot, page_fade=page_fade, header=header,
+        )
         (out_dir / filename).write_text(page, encoding="utf-8")
     for asset in ("style.css", "app.js", "fox.js", "anime.umd.min.js",
-                  "grims-mark.svg", "grims-logo-horizontal.svg",
-                  "og-preview.png", "googlee8fcbc5f56b1ecd1.html"):
+                  "story.css", "story.js", "transitions.js", "grims-mark.svg",
+                  "grims-logo-horizontal.svg", "og-preview.png", "googlee8fcbc5f56b1ecd1.html"):
         src = ROOT / "assets" / asset
         if src.exists():
             shutil.copy(src, out_dir / asset)

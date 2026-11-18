@@ -1,0 +1,375 @@
+/* ============================================================
+   Grims Studio — Story page (home) styles
+   Scroll-driven storytelling. Cyber-Clinical dark theme.
+
+   Scope: every rule below is pinned under .story-page so it never
+   bumps into assets/style.css (the inner pages keep that theme).
+
+   Timing edit guide
+   =================
+   --dur-* variables live in assets/style.css (the motion roster).
+   --bg-0 / --bg-1 are the obsidian base palette.
+   --accent = electric vermilion #FF4D2D | --cyan = bioluminescent #00E5A0
+   --ink / --ink-soft = warm text on obsidian.
+
+   Edit these numbers to retune the story:
+     --fox-wake-at     scroll progress where the fox first wakes (0..1)
+     --fox-point-at    scroll progress where the fox points (0..1)
+     --reveal-offset   how far into the viewport a .reveal should trigger
+   ============================================================ */
+
+/* ---------- page shell: the whole story scrolls as one world ---------- */
+.story-page {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(120% 90% at 50% 0%, #1a1a22 0%, var(--bg-0) 55%, var(--bg-1) 100%);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* one world, chapters stack without gaps */
+.story-page body {
+  scroll-snap-type: y proximity;
+}
+.story-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- parallax layers (absolute, chip away as you scroll) ---------- */
+.story-page .scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 0;
+}
+/* dot-matrix blueprint grid (lights up near cursor) */
+.story-page .scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: radial-gradient(130% 90% at var(--glow-x, 50%) var(--glow-y, 50%), #000 55%, transparent 100%);
+  -webkit-mask-image: radial-gradient(130% 90% at var(--glow-x, 50%) var(--glow-y, 50%), #000 55%, transparent 100%);
+}
+/* ambient gradient blob that drifts */
+.story-page .scene::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--bgx, 50%) var(--bgy, 50%), var(--bgc, var(--bg-1))), transparent;
+  opacity: 0.30;
+  will-change: transform, opacity;
+}
+
+/* ---------- chapters (full viewport each) ---------- */
+.story-page .chapter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  scroll-snap-align: start;
+  overflow: hidden;
+}
+.story-page .chapter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bg-0);
+  box-shadow: inset 0 0 220px rgba(255, 255, 255, 0.02);
+}
+
+/* opening chapter gets the hero treatment (fox centered, more air) */
+.story-page .chapter--hero .fox-stage {
+  flex: 1 1 42vh;
+  min-height: 260px;
+}
+
+/* ---------- chapter head ---------- */
+.story-page .chapter-head {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 1200px;
+  padding: 2rem 1.5rem 1rem;
+}
+.story-page .chapter-head .eyebrow {
+  font: 600 11px/1.4 monospace;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+.story-page .chapter-head h1 {
+  font: 900 clamp(40px, 8vw, 96px)/1.02 Georgia, "Public Sans", serif;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin: 0.4rem 0 0.6rem;
+}
+.story-page .chapter-head .pitch {
+  font-family: "Public Sans", "Inter", sans-serif;
+  font-size: clamp(15px, 2vw, 19px);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: 34em;
+  margin: 0 auto;
+}
+
+/* ---------- lede (the mapped line, punchy) ---------- */
+.story-page .lede {
+  font-family: Georgia, "Public Sans", serif;
+  font-size: clamp(17px, 2.4vw, 24px);
+  line-height: 1.7;
+  text-align: center;
+  color: var(--ink);
+  max-width: 30em;
+  margin: 0.4rem 1rem 2.5rem;
+}
+.story-page .lede strong { color: var(--accent); }
+
+/* ---------- chapter navigation (back to story + next chapter) ---------- */
+.story-page .chapter-nav {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  padding: 0.7rem 1.5rem 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.story-page .chapter-nav .back,
+.story-page .chapter-nav .next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  font: 600 12px/1.2 "Public Sans", "Inter", sans-serif;
+  background: rgba(28, 28, 34, 0.55);
+  border: 1px solid var(--line-strong);
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: transform var(--dur-fast) ease, background var(--dur-fast) ease,
+              color var(--dur-fast) ease, border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+}
+.story-page .chapter-nav .back span,
+.story-page .chapter-nav .next span { text-transform: uppercase; letter-spacing: 0.12em; font-size: 11px; }
+
+.story-page .chapter-nav .back:hover,
+.story-page .chapter-nav .next:hover {
+  transform: translateY(-1px);
+  background: rgba(28, 28, 34, 0.78);
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.story-page .chapter-nav .back:focus-visible,
+.story-page .chapter-nav .next:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+/* ---------- fox (protagonist) ---------- */
+.story-page .fox-stage {
+  position: relative;
+  flex: 1 1 38vh;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.story-page .fox-stage svg {
+  display: block;
+  width: min(64vh, 520px);
+  height: min(64vh, 520px);
+  filter: drop-shadow(0 18px 40px rgba(255, 77, 45, 0.18));
+}
+/* sleeping state */
+.story-page .fox--sleeping .fx-pupil { opacity: 0; transform: translateY(2px); }
+.story-page .fox--sleeping .fx-head { transform: rotate(-4deg) translateY(3px); }
+.story-page .fox--sleeping .fx-ear { transform: rotate(-16deg); }
+.story-page .fox--sleeping .fx-tail { transform: rotate(6deg); }
+/* awake state */
+.story-page .fox--awake .fx-pupil { opacity: 1; transform: none; }
+.story-page .fox--awake .fx-head { transform: rotate(3deg) translateY(0); }
+.story-page .fox--awake .fx-ear { transform: rotate(16deg); }
+.story-page .fox--awake .fx-tail { animation: tailSway 6s ease-in-out infinite alternate; }
+/* chest rise, tail sway, blink while awake */
+.story-page .fox-scene .fx-body { animation: breath 5s ease-in-out infinite alternate; }
+.story-page .fox--awake .fx-eyebrow,
+.story-page .fox--awake .fx-squint { animation: blink 4.5s ease-in-out infinite; }
+.story-page .fox--awake .fx-eyebrow:nth-child(2),
+.story-page .fox--awake .fx-squint:nth-child(2) { animation-delay: 1.6s; }
+.story-page .fox--awake .fx-eyebrow:nth-child(3),
+.story-page .fox--awake .fx-squint:nth-child(3) { animation-delay: 3.2s; }
+/* pointing toward the next chapter */
+.story-page .fox--point .fx-head { transform: rotate(14deg) translateX(6px); animation: headBob 3s ease-in-out infinite; }
+.story-page .fox--point .fx-ear { animation: earPerk 3s ease-in-out infinite; }
+.story-page .fox--point .fx-body { animation: breath 4s ease-in-out infinite alternate; }
+
+@keyframes breath {
+  0% { transform: scaleY(0.985) translateY(2px); }
+  100% { transform: scaleY(1.015) translateY(-2px); }
+}
+@keyframes tailSway {
+  0% { transform: rotate(6deg); }
+  50% { transform: rotate(-8deg); }
+  100% { transform: rotate(6deg); }
+}
+@keyframes blink {
+  0%, 99% { transform: scaleY(1); }
+  99.5% { transform: scaleY(0.15); }
+  100% { transform: scaleY(1); }
+}
+@keyframes headBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+@keyframes earPerk {
+  0%, 100% { transform: rotate(16deg); }
+  50% { transform: rotate(26deg); }
+}
+
+/* ---------- staggered reveals (text, cards, images) ---------- */
+.story-page .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+}
+.story-page .reveal.is-visible,
+.story-page .reveal.enter {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- CTA ---------- */
+.story-page .lead-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.8rem 1.7rem;
+  border-radius: 10px;
+  font: 600 15px/1.2 "Public Sans", "Inter", sans-serif;
+  background: linear-gradient(135deg, var(--accent) 0%, #FF9A4D 100%);
+  color: #0E0A06;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 0 0 rgba(255, 77, 45, 0);
+  transition: transform var(--dur-fast) ease, box-shadow var(--dur-fast) ease,
+              filter var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+.story-page .lead-btn:hover,
+.story-page .lead-btn:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 5px rgba(255, 77, 45, 0.18), 0 8px 24px rgba(255, 77, 45, 0.35);
+  filter: brightness(1.03);
+  outline: none;
+}
+
+/* ---------- marker dots (story progress) ---------- */
+.story-page .marker-track {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.2rem 1.5rem 1.6rem;
+  flex-wrap: wrap;
+}
+.story-page .marker {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+.story-page .marker:hover { background: rgba(255, 255, 255, 0.32); transform: scale(1.2); }
+.story-page .marker.active { background: var(--cyan); border-color: var(--cyan); transform: scale(1.25); }
+
+/* ---------- inner-page spine (back to story + continue) ---------- */
+.story-page .story-foot {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(18, 18, 21, 0.94), rgba(18, 18, 21, 0.74) 62%, transparent);
+  color: var(--ink-soft);
+  font: 600 12px/1.2 "Public Sans", "Inter", sans-serif;
+}
+.story-page .story-foot__link,
+.story-page .story-foot__next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  background: rgba(28, 28, 34, 0.55);
+  border: 1px solid var(--line-strong);
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+}
+.story-page .story-foot__link span,
+.story-page .story-foot__next span { text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; }
+.story-page .story-foot__link:hover,
+.story-page .story-foot__next:hover { background: rgba(28, 28, 34, 0.8); color: var(--ink); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-1px); }
+.story-page .story-foot__next { justify-content: flex-end; color: var(--cyan); border-color: rgba(0, 229, 160, 0.35); }
+.story-page .story-foot__next:hover { background: rgba(0, 229, 160, 0.14); border-color: rgba(0, 229, 160, 0.6); }
+.story-page .story-foot__icon { flex: 0 0 auto; width: 16px; height: 16px; }
+
+/* ---------- skip link ---------- */
+.story-page .skip-link {
+  position: absolute;
+  top: -3rem;
+  left: 1rem;
+  background: var(--accent);
+  color: #0E0A06;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  z-index: 100;
+  transition: top var(--dur-fast) ease;
+}
+.story-page .skip-link:focus { top: 1rem; }
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .story-page .reveal,
+  .story-page .scene::after { animation: none !important; transition: none !important; }
+  .story-page .fox--sleeping .fx-pupil,
+  .story-page .fox--awake .fx-pupil { opacity: 1 !important; }
+  .story-page .fox--sleeping .fx-ear,
+  .story-page .fox--awake .fx-ear { transform: none !important; }
+  .story-page .story-foot,
+  .story-page .fox-trail { display: none; }
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 640px) {
+  .story-page .chapter { min-height: 92vh; padding: 4vh 4vw 30vh; }
+  .story-page .chapter-head { padding: 1.2rem 1rem 0.6rem; }
+  .story-page .fox-stage svg { width: min(52vh, 420px); height: min(52vh, 420px); }
+  .story-page .chapter-nav { justify-content: center; }
+  .story-page .lead-btn { width: 100%; justify-content: center; }
+  .story-page .marker-track { padding: 0.8rem 1rem 1.2rem; }
+  .story-page .story-foot { padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom)); }
+  .story-page .story-foot__link,
+  .story-page .story-foot__next { padding: 0.4rem 0.7rem; }
+  .story-page .story-foot__icon { width: 14px; height: 14px; }
+}
