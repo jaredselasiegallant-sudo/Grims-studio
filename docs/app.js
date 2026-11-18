@@ -19,18 +19,42 @@
   }
 
   // ---------- magnetic buttons (pull toward the cursor) ----------
+  const reducedMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const finePointer = !window.matchMedia || window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   const magnets = Array.from(document.querySelectorAll('.btn-magnet, .magnet-target'));
-  if (magnets.length) {
-    let mx = 0, my = 0, raf = 0;
+  if (magnets.length && finePointer && !reducedMotion) {
+    const state = magnets.map((el) => ({ el, x: 0, y: 0, cx: 0, cy: 0 }));
+    let mx = window.innerWidth / 2, my = window.innerHeight / 2, raf = 0;
+
+    const measure = () => {
+      state.forEach((s) => {
+        const r = s.el.getBoundingClientRect();
+        // remove the current offset so the base centre stays stable
+        s.cx = r.left + r.width / 2 - s.x;
+        s.cy = r.top + r.height / 2 - s.y;
+      });
+    };
+
     const step = () => {
-      magnets.forEach((b) => { b.style.transform = `translate(${mx.toFixed(3)}px, ${my.toFixed(3)}px)`; });
+      state.forEach((s) => {
+        const dx = mx - s.cx;
+        const dy = my - s.cy;
+        const near = Math.max(0, 1 - Math.hypot(dx, dy) / 280);
+        const tx = dx * 0.10 * near;
+        const ty = dy * 0.16 * near;
+        s.x += (tx - s.x) * 0.16;
+        s.y += (ty - s.y) * 0.16;
+        s.el.style.transform = `translate(${s.x.toFixed(2)}px, ${s.y.toFixed(2)}px)`;
+      });
       raf = 0;
     };
+
+    measure();
+    window.addEventListener('resize', measure);
     document.addEventListener('pointermove', (e) => {
-      mx += (e.clientX - mx) * 0.14;
-      my += (e.clientY - my) * 0.14;
-      if (raf === 0) { raf = requestAnimationFrame(step); }
-    });
+      mx = e.clientX; my = e.clientY;
+      if (!raf) raf = requestAnimationFrame(step);
+    }, { passive: true });
   }
 
   // ---------- spotlight borders (glow near nearby cards) ----------
@@ -147,4 +171,41 @@
   document.querySelectorAll('.footer .quiet').forEach((el) => {
     el.textContent = '© ' + new Date().getFullYear() + ' Grims Studio · Static site';
   });
+
+  // ---------- inner-page reveal system ----------
+  // The class is only added when this script runs, so content is never hidden
+  // for a visitor without JS. Stagger index comes from sibling order.
+  if (!reducedMotion && 'IntersectionObserver' in window) {
+    const selectors = [
+      '.block .section-head', '.block .controls', '.block .prose',
+      '.block .card', '.mini', '.spec', '.faq-item', '.download-hero-top',
+      '.nf-stage'
+    ];
+    const seen = new Set();
+    const targets = [];
+    selectors.forEach((sel) => {
+      document.querySelectorAll(sel).forEach((el) => {
+        if (seen.has(el)) return;
+        seen.add(el);
+        targets.push(el);
+      });
+    });
+    targets.forEach((el) => {
+      let i = 0;
+      let sib = el;
+      while ((sib = sib.previousElementSibling)) {
+        if (sib.classList.contains('will-reveal')) i += 1;
+      }
+      el.style.setProperty('--i', String(Math.min(i, 6)));
+      el.classList.add('will-reveal');
+    });
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+    targets.forEach((el) => io.observe(el));
+  }
 })();

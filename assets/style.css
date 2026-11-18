@@ -394,6 +394,9 @@ a:hover { color: var(--cyan); }
 /* ---------- contact + footer ---------- */
 .contact-box { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
 .footer { border-top: 1px solid var(--line-soft); margin-top: 2.5rem; padding: 1.8rem 0 2rem; color: var(--ink-soft); font-size: .95rem; }
+/* The supplied logo art is solid black on a transparent canvas: invert it for
+   the obsidian footer and cap the height so it stays a compact lockup. */
+.footer-logo { height: 34px; width: auto; opacity: .88; filter: invert(1); }
 .footer-inner { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
 .footer nav { display: flex; gap: 1rem; }
 .footer nav a { color: var(--ink-soft); text-decoration: none; }
@@ -501,9 +504,22 @@ a:hover { color: var(--cyan); }
 .faq-item p { padding: 0 1.2rem .95rem; color: var(--ink-soft); }
 .faq-item[open] { border-color: var(--accent); }
 
-/* ---------- motion & scroll ---------- */
-.reveal { opacity: 0; transform: translateY(18px); transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); transition-delay: var(--reveal-delay, 0ms); }
-.reveal.is-visible { opacity: 1; transform: none; }
+/* ---------- motion & scroll ----------
+   Hidden-until-revealed only applies when JS is on (html.js-fade is added by
+   the inline head script in build.py). Without JS everything stays visible. */
+.reveal { transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out); transition-delay: var(--reveal-delay, 0ms); }
+html.js-fade .reveal { opacity: 0; transform: translateY(18px); }
+html.js-fade .reveal.is-visible { opacity: 1; transform: none; }
+
+/* Inner-page reveals. The class is added by app.js, so no-JS visitors
+   always see the full page. */
+.will-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.will-reveal.in { opacity: 1; transform: none; }
 
 /* bento entrance choreography (spring physics) */
 .bento-tile {

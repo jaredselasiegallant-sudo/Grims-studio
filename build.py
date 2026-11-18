@@ -343,7 +343,10 @@ def base_page(*, title: str, description: str, company: str, tagline: str,
     scripts_html = ""
     if isinstance(scripts, (list, tuple)):
         script_tags = "".join(
-            f'  <script src="./{html.escape(str(s))}" defer></script>\n' for s in scripts
+            '  <script src="{0}" defer></script>\n'.format(
+                html.escape(s if str(s).startswith("./") else "./" + str(s))
+            )
+            for s in scripts
         )
         scripts_html = script_tags
     elif scripts:
@@ -355,8 +358,18 @@ def base_page(*, title: str, description: str, company: str, tagline: str,
         scripts_html = script_tags
     head_extra = ""
     if page_fade:
-        head_extra = '  <style>body{opacity:0;transition:opacity .34s ease}</style>\n'
+        # JS-only fade: the class is added by this inline script, so a visitor
+        # without JS always sees a fully visible page. The 1.6 s timer is a
+        # failsafe if transitions.js never runs.
+        head_extra = (
+            '  <style>html.js-fade body{opacity:0}'
+            'html.js-fade.page-ready body{opacity:1;transition:opacity .34s ease}</style>\n'
+            "  <script>document.documentElement.classList.add('js-fade');"
+            "setTimeout(function(){document.documentElement.classList.add('page-ready')},1600);</script>\n"
+        )
     header_html = site_header(company, tagline, email, active) if header else ""
+    body_class = "has-story-foot" if foot else ""
+    body_attr = f' class="{body_class}"' if body_class else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -368,12 +381,12 @@ def base_page(*, title: str, description: str, company: str, tagline: str,
   <meta property="og:description" content="{html.escape(description)}" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="./og-preview.png" />
-{head_extra}  <link rel="stylesheet" href="./story.css" />
-  <link rel="stylesheet" href="./style.css" />
+{head_extra}  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./story.css" />
   <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
   <link rel="canonical" href="{html.escape(canonical)}" />
 </head>
-<body>
+<body{body_attr}>
   <a class="skip-link" href="#main">Skip to content</a>
 {header_html}
   <main id="main">
@@ -734,6 +747,16 @@ def home_page(ctx: dict) -> str:  # noqa: C901
     def chapter(c, hero=False):
         cid, eyebrow, heading, sub, pitch, cta_label, cta_href, next_id, next_label = c
         fx = fox_svg(variant="hero")
+        act = {
+            "q1-quiet": "quiet", "q2-us": "us", "q3-make": "make",
+            "q4-studio": "studio", "q5-end": "end",
+        }.get(cid, "quiet")
+        # One h1 per page (the opening line); later chapters use h2 with the
+        # same visual weight.
+        if hero:
+            heading_html = f"<h1>{html.escape(heading)}</h1>"
+        else:
+            heading_html = f'<h2 class="chapter-title">{html.escape(heading)}</h2>'
         parts = []
         if cid != "q1-quiet":
             parts.append(
@@ -747,29 +770,39 @@ def home_page(ctx: dict) -> str:  # noqa: C901
                 + "<span>" + html.escape(next_label) + " →</span></a>"
             )
         nav = ""
-        if parts:
-            nav = '<div class="chapter-nav">' + "".join(parts) + "</div>"
-        cta = '<a class="lead-btn" href="' + html.escape(cta_href) + '">' + html.escape(cta_label) + "</a>"
-        return f"""
-      <section class="chapter{' chapter--hero' if hero else ''}"
-               id="{cid}" data-chapter="{cid}">
-        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
-        <div class="scene" data-parallax="0.14" data-glow></div>
-        <div class="scene" data-parallax="0.22"></div>
+        # The hero's CTA ("Begin") already advances the story; a second
+        # chapter-nav there would duplicate it.
+        if parts and not hero:
+            nav = ('<div class="chapter-nav reveal" style="--i:2">'
+                   + "".join(parts) + "</div>")
+        cta = ('<a class="lead-btn reveal" style="--i:3" href="'
+               + html.escape(cta_href) + '">' + html.escape(cta_label) + "</a>")
+        inner = f"""
         <div class="fox-stage">{fx}</div>
-        <header class="chapter-head">
+        <header class="chapter-head reveal" style="--i:0">
           <p class="eyebrow">{html.escape(eyebrow)}</p>
-          <h1>{html.escape(heading)}</h1>
+          {heading_html}
           <p class="pitch">{html.escape(sub)}</p>
         </header>
-        <p class="lede"><strong>{html.escape(pitch)}</strong></p>
+        <p class="lede reveal" style="--i:1"><strong>{html.escape(pitch)}</strong></p>
         {nav}
-        {cta}
+        {cta}"""
+        # The opening chapter is taller than the viewport and pins its content
+        # while the visitor scrolls, so the fox's wake + stretch actually plays
+        # on screen before the chapter releases.
+        body = f'<div class="hero-pin">{inner}</div>' if hero else inner
+        return f"""
+      <section class="chapter{' chapter--hero' if hero else ''}"
+               id="{cid}" data-chapter="{cid}" data-act="{act}">
+        <div class="scene scene--far" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene scene--glow" data-parallax="0.14" data-glow aria-hidden="true"></div>
+        <div class="scene scene--near" data-parallax="0.22" aria-hidden="true"></div>
+        {body}
       </section>"""
 
     acts = "".join(chapter(c, hero=(c[0] == "q1-quiet")) for c in chapters)
     dots = "".join(
-        '<button class="marker" data-marker="{0}" aria-label="{1}"></button>'.format(c[0], c[1])
+        '<button class="marker" type="button" data-marker="{0}" aria-label="Go to {1}"></button>'.format(c[0], c[1])
         for c in chapters
     )
     return f"""
@@ -972,30 +1005,30 @@ def build(out_dir: Path):
     }
 
     pages = [
-        # Home: the story. No top bar, no foot, body fades in on load.
+        # Home: the story. No top bar, no foot.
         ("index.html", "Home", f"{company} — {tagline} {name}",
          f"{company}: {tagline} Offline-first, privacy-conscious apps by {name}, {role}.",
-         "index.html", home_page(ctx), ["./story.js"], "",
-         False, False),
+         "index.html", home_page(ctx), ["./transitions.js", "./story.js"], "",
+         True, False),
         # Inner pages: a slim spine replaces the missing top bar.
         ("applications.html", "Applications", f"Applications — {company}",
          f"Browse all {company} applications: offline-first apps, games, and design work by {name}.",
-         "applications.html", applications_page(ctx), ["./transitions.js"],
+         "applications.html", applications_page(ctx), ["./app.js", "./transitions.js"],
          story_chapter_foot(next_href="./studio.html", next_label="The Studio"),
          True, False),
         ("studio.html", "Studio", f"{company} — {tagline}",
          f"{company}: {tagline} Offline-first, privacy-conscious apps by {name}, {role}.",
-         "studio.html", studio_page(ctx), ["./transitions.js"],
+         "studio.html", studio_page(ctx), ["./app.js", "./transitions.js"],
          story_chapter_foot(next_href="./index.html#q5-end", next_label="The Note"),
          True, False),
         ("about.html", "About", f"About {name} — {company}",
          f"About {name}, {role} based in {location}: biomedical research, leadership, skills, and contact.",
-         "about.html", about_page(ctx), ["./transitions.js"],
+         "about.html", about_page(ctx), ["./app.js", "./transitions.js"],
          story_chapter_foot(next_href="./applications.html", next_label="What We Make"),
          True, False),
         ("404.html", "Not found", f"Page not found — {company}",
          f"The requested {company} page could not be found.",
-         "", not_found_page(ctx), ["./transitions.js"],
+         "", not_found_page(ctx), ["./app.js", "./transitions.js"],
          story_chapter_foot(next_href="./index.html#q1-quiet", next_label="Continue"),
          True, False),
     ]
@@ -1039,7 +1072,7 @@ def build(out_dir: Path):
         shutil.copytree(shots_src, out_dir / "screenshots", dirs_exist_ok=True)
     # SEO: sitemap + robots for Google indexing (404 excluded from sitemap)
     today = date.today().isoformat()
-    sitemap_files = ["index.html", "applications.html", "about.html"]
+    sitemap_files = ["index.html", "applications.html", "studio.html", "about.html"]
     sitemap_files += [app_route(p) for p in projects]
     urls = "\n".join(
         f"  <url><loc>{SITE_URL}/{f}</loc><lastmod>{today}</lastmod></url>"

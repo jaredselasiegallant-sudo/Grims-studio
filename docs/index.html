@@ -9,8 +9,10 @@
   <meta property="og:description" content="Grims Studio: Clear Diagnosis, Clean Cure. Offline-first, privacy-conscious apps by Jared Selasie Gallant, Biomedical Sciences Researcher &amp; Lead Developer." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="./og-preview.png" />
-  <link rel="stylesheet" href="./story.css" />
+  <style>html.js-fade body{opacity:0}html.js-fade.page-ready body{opacity:1;transition:opacity .34s ease}</style>
+  <script>document.documentElement.classList.add('js-fade');setTimeout(function(){document.documentElement.classList.add('page-ready')},1600);</script>
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./story.css" />
   <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
   <link rel="canonical" href="https://jaredselasiegallant-sudo.github.io/Grims-studio/index.html" />
 </head>
@@ -24,10 +26,11 @@
         <div class="scene" data-parallax="0.00" aria-hidden="true"></div>
         
       <section class="chapter chapter--hero"
-               id="q1-quiet" data-chapter="q1-quiet">
-        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
-        <div class="scene" data-parallax="0.14" data-glow></div>
-        <div class="scene" data-parallax="0.22"></div>
+               id="q1-quiet" data-chapter="q1-quiet" data-act="quiet">
+        <div class="scene scene--far" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene scene--glow" data-parallax="0.14" data-glow aria-hidden="true"></div>
+        <div class="scene scene--near" data-parallax="0.22" aria-hidden="true"></div>
+        <div class="hero-pin">
         <div class="fox-stage"><svg class="fox fox-hero" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
       <title>Kit, the Grims Studio fox</title>
       <g class="fx-tail">
@@ -78,20 +81,21 @@
         </g>
       </g>
     </svg></div>
-        <header class="chapter-head">
+        <header class="chapter-head reveal" style="--i:0">
           <p class="eyebrow">The Beginning</p>
           <h1>The Quiet World</h1>
           <p class="pitch">A calm world waiting. For now, the quiet is the whole story.</p>
         </header>
-        <p class="lede"><strong>Then one small breath, and everything changes.</strong></p>
-        <div class="chapter-nav"><a class="next" href="#q2-us"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>What We Make →</span></a></div>
-        <a class="lead-btn" href="#q2-us">Begin &gt;</a>
+        <p class="lede reveal" style="--i:1"><strong>Then one small breath, and everything changes.</strong></p>
+        
+        <a class="lead-btn reveal" style="--i:3" href="#q2-us">Begin &gt;</a></div>
       </section>
       <section class="chapter"
-               id="q2-us" data-chapter="q2-us">
-        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
-        <div class="scene" data-parallax="0.14" data-glow></div>
-        <div class="scene" data-parallax="0.22"></div>
+               id="q2-us" data-chapter="q2-us" data-act="us">
+        <div class="scene scene--far" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene scene--glow" data-parallax="0.14" data-glow aria-hidden="true"></div>
+        <div class="scene scene--near" data-parallax="0.22" aria-hidden="true"></div>
+        
         <div class="fox-stage"><svg class="fox fox-hero" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
       <title>Kit, the Grims Studio fox</title>
       <g class="fx-tail">
@@ -142,20 +146,21 @@
         </g>
       </g>
     </svg></div>
-        <header class="chapter-head">
+        <header class="chapter-head reveal" style="--i:0">
           <p class="eyebrow">The Beginning of Us</p>
-          <h1>Who We Are</h1>
+          <h2 class="chapter-title">Who We Are</h2>
           <p class="pitch">Medical science meets engineering.</p>
         </header>
-        <p class="lede"><strong>Offline-first tools that put you back in control.</strong></p>
-        <div class="chapter-nav"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a><a class="next" href="#q3-make"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>What We Make →</span></a></div>
-        <a class="lead-btn" href="./about.html">Meet the team &gt;</a>
+        <p class="lede reveal" style="--i:1"><strong>Offline-first tools that put you back in control.</strong></p>
+        <div class="chapter-nav reveal" style="--i:2"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a><a class="next" href="#q3-make"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>What We Make →</span></a></div>
+        <a class="lead-btn reveal" style="--i:3" href="./about.html">Meet the team &gt;</a>
       </section>
       <section class="chapter"
-               id="q3-make" data-chapter="q3-make">
-        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
-        <div class="scene" data-parallax="0.14" data-glow></div>
-        <div class="scene" data-parallax="0.22"></div>
+               id="q3-make" data-chapter="q3-make" data-act="make">
+        <div class="scene scene--far" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene scene--glow" data-parallax="0.14" data-glow aria-hidden="true"></div>
+        <div class="scene scene--near" data-parallax="0.22" aria-hidden="true"></div>
+        
         <div class="fox-stage"><svg class="fox fox-hero" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
       <title>Kit, the Grims Studio fox</title>
       <g class="fx-tail">
@@ -206,20 +211,21 @@
         </g>
       </g>
     </svg></div>
-        <header class="chapter-head">
+        <header class="chapter-head reveal" style="--i:0">
           <p class="eyebrow">The Work</p>
-          <h1>What We Make</h1>
+          <h2 class="chapter-title">What We Make</h2>
           <p class="pitch">Apps built to last, on purpose.</p>
         </header>
-        <p class="lede"><strong>Offline-first apps, games, and design work for real lives.</strong></p>
-        <div class="chapter-nav"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a><a class="next" href="#q4-studio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The Studio →</span></a></div>
-        <a class="lead-btn" href="./applications.html">See our work &gt;</a>
+        <p class="lede reveal" style="--i:1"><strong>Offline-first apps, games, and design work for real lives.</strong></p>
+        <div class="chapter-nav reveal" style="--i:2"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a><a class="next" href="#q4-studio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The Studio →</span></a></div>
+        <a class="lead-btn reveal" style="--i:3" href="./applications.html">See our work &gt;</a>
       </section>
       <section class="chapter"
-               id="q4-studio" data-chapter="q4-studio">
-        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
-        <div class="scene" data-parallax="0.14" data-glow></div>
-        <div class="scene" data-parallax="0.22"></div>
+               id="q4-studio" data-chapter="q4-studio" data-act="studio">
+        <div class="scene scene--far" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene scene--glow" data-parallax="0.14" data-glow aria-hidden="true"></div>
+        <div class="scene scene--near" data-parallax="0.22" aria-hidden="true"></div>
+        
         <div class="fox-stage"><svg class="fox fox-hero" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
       <title>Kit, the Grims Studio fox</title>
       <g class="fx-tail">
@@ -270,20 +276,21 @@
         </g>
       </g>
     </svg></div>
-        <header class="chapter-head">
+        <header class="chapter-head reveal" style="--i:0">
           <p class="eyebrow">The Space</p>
-          <h1>The Studio</h1>
+          <h2 class="chapter-title">The Studio</h2>
           <p class="pitch">Where biomedical science meets clean code.</p>
         </header>
-        <p class="lede"><strong>Lead development, design, and the craft between a diagnosis and a cure.</strong></p>
-        <div class="chapter-nav"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a><a class="next" href="#q5-end"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The Note →</span></a></div>
-        <a class="lead-btn" href="./studio.html">Visit the studio &gt;</a>
+        <p class="lede reveal" style="--i:1"><strong>Lead development, design, and the craft between a diagnosis and a cure.</strong></p>
+        <div class="chapter-nav reveal" style="--i:2"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a><a class="next" href="#q5-end"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>The Note →</span></a></div>
+        <a class="lead-btn reveal" style="--i:3" href="./studio.html">Visit the studio &gt;</a>
       </section>
       <section class="chapter"
-               id="q5-end" data-chapter="q5-end">
-        <div class="scene" data-parallax="0.06" aria-hidden="true"></div>
-        <div class="scene" data-parallax="0.14" data-glow></div>
-        <div class="scene" data-parallax="0.22"></div>
+               id="q5-end" data-chapter="q5-end" data-act="end">
+        <div class="scene scene--far" data-parallax="0.06" aria-hidden="true"></div>
+        <div class="scene scene--glow" data-parallax="0.14" data-glow aria-hidden="true"></div>
+        <div class="scene scene--near" data-parallax="0.22" aria-hidden="true"></div>
+        
         <div class="fox-stage"><svg class="fox fox-hero" viewBox="0 0 320 320" role="img" aria-hidden="true" focusable="false">
       <title>Kit, the Grims Studio fox</title>
       <g class="fx-tail">
@@ -334,16 +341,16 @@
         </g>
       </g>
     </svg></div>
-        <header class="chapter-head">
+        <header class="chapter-head reveal" style="--i:0">
           <p class="eyebrow">The Note</p>
-          <h1>The Story Continues</h1>
+          <h2 class="chapter-title">The Story Continues</h2>
           <p class="pitch">The ending that keeps going.</p>
         </header>
-        <p class="lede"><strong>Diagnosis. Cure. Something built to last. Follow up.</strong></p>
-        <div class="chapter-nav"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a></div>
-        <a class="lead-btn" href="mailto:jaredselasiegallant@gmail.com">Follow up &gt;</a>
+        <p class="lede reveal" style="--i:1"><strong>Diagnosis. Cure. Something built to last. Follow up.</strong></p>
+        <div class="chapter-nav reveal" style="--i:2"><a class="back" href="#q1-quiet"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 18l-6-6 6-6" fill="none" stroke="#EDEAE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Back to the quiet</span></a></div>
+        <a class="lead-btn reveal" style="--i:3" href="mailto:jaredselasiegallant@gmail.com">Follow up &gt;</a>
       </section>
-        <div class="marker-track"><button class="marker" data-marker="q1-quiet" aria-label="The Beginning"></button><button class="marker" data-marker="q2-us" aria-label="The Beginning of Us"></button><button class="marker" data-marker="q3-make" aria-label="The Work"></button><button class="marker" data-marker="q4-studio" aria-label="The Space"></button><button class="marker" data-marker="q5-end" aria-label="The Note"></button></div>
+        <div class="marker-track"><button class="marker" type="button" data-marker="q1-quiet" aria-label="Go to The Beginning"></button><button class="marker" type="button" data-marker="q2-us" aria-label="Go to The Beginning of Us"></button><button class="marker" type="button" data-marker="q3-make" aria-label="Go to The Work"></button><button class="marker" type="button" data-marker="q4-studio" aria-label="Go to The Space"></button><button class="marker" type="button" data-marker="q5-end" aria-label="Go to The Note"></button></div>
       </div>
     </div>
     
@@ -361,7 +368,8 @@
       <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site</span>
     </div>
   </footer>
-  <script src="././story.js" defer></script>
+  <script src="./transitions.js" defer></script>
+  <script src="./story.js" defer></script>
 
 </body>
 </html>

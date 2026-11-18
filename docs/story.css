@@ -25,20 +25,20 @@
   background: radial-gradient(120% 90% at 50% 0%, #1a1a22 0%, var(--bg-0) 55%, var(--bg-1) 100%);
   color: var(--ink);
   min-height: 100vh;
-  overflow-x: hidden;
+  /* clip (not hidden) keeps horizontal overflow contained WITHOUT creating a
+     scroll container, which would break the sticky hero pin. */
+  overflow-x: clip;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
 }
 
 /* one world, chapters stack without gaps */
-.story-page body {
-  scroll-snap-type: y proximity;
-}
 .story-wrap {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 }
 
 /* ---------- parallax layers (absolute, chip away as you scroll) ---------- */
@@ -76,7 +76,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100%;
   min-height: 100vh;
+  box-sizing: border-box;
+  /* bottom padding keeps the fixed marker nav off the CTA */
+  padding: 4vh 1.2rem calc(5.5rem + env(safe-area-inset-bottom));
   scroll-snap-align: start;
   overflow: hidden;
 }
@@ -84,14 +88,57 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--bg-0);
+  background:
+    radial-gradient(90% 70% at var(--act-x, 50%) 16%, var(--act-a, #121215), transparent 72%),
+    var(--act-b, #16161b);
   box-shadow: inset 0 0 220px rgba(255, 255, 255, 0.02);
 }
 
-/* opening chapter gets the hero treatment (fox centered, more air) */
+/* Each chapter carries its own palette. The scenes and the hover state read
+   these variables, so the world changes hue as the story advances. */
+.story-page .chapter[data-act="quiet"] {
+  --act-a: #121215; --act-b: #0d0f14; --act-x: 30%;
+  --bgc: rgba(0, 229, 160, 0.10);
+}
+.story-page .chapter[data-act="us"] {
+  --act-a: #1a131a; --act-b: #121215; --act-x: 68%;
+  --bgc: rgba(255, 77, 45, 0.12);
+}
+.story-page .chapter[data-act="make"] {
+  --act-a: #1d1413; --act-b: #121215; --act-x: 42%;
+  --bgc: rgba(255, 77, 45, 0.16);
+}
+.story-page .chapter[data-act="studio"] {
+  --act-a: #101a19; --act-b: #121215; --act-x: 58%;
+  --bgc: rgba(0, 229, 160, 0.14);
+}
+.story-page .chapter[data-act="end"] {
+  --act-a: #151216; --act-b: #0d0f14; --act-x: 50%;
+  --bgc: rgba(255, 77, 45, 0.16);
+}
+
+/* opening chapter: 170vh of scroll, content pinned for the performance */
+.story-page .chapter--hero {
+  min-height: 170vh;
+  padding: 0;
+  display: block;
+  justify-content: flex-start;
+  /* `clip` (not `hidden`) so the sticky hero-pin can still stick */
+  overflow: clip;
+}
+.story-page .hero-pin {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 1.2rem calc(5.5rem + env(safe-area-inset-bottom));
+}
 .story-page .chapter--hero .fox-stage {
-  flex: 1 1 42vh;
-  min-height: 260px;
+  flex: 0 0 auto;
 }
 
 /* ---------- chapter head ---------- */
@@ -108,12 +155,15 @@
   text-transform: uppercase;
   color: var(--cyan);
 }
-.story-page .chapter-head h1 {
+.story-page .chapter-head h1,
+.story-page .chapter-head .chapter-title {
   font: 900 clamp(40px, 8vw, 96px)/1.02 Georgia, "Public Sans", serif;
   letter-spacing: -0.01em;
   color: var(--ink);
   margin: 0.4rem 0 0.6rem;
 }
+.story-page .chapter-head { transition: transform 0.5s var(--ease-out); }
+.story-page .chapter:hover .chapter-head { transform: translateY(-2px); }
 .story-page .chapter-head .pitch {
   font-family: "Public Sans", "Inter", sans-serif;
   font-size: clamp(15px, 2vw, 19px);
@@ -180,39 +230,60 @@
 }
 
 /* ---------- fox (protagonist) ---------- */
+/* Reset the shared .fox-stage panel from style.css: the story page does not
+   want its 380px panel, grid centring, clipping or gradient plate. */
 .story-page .fox-stage {
   position: relative;
-  flex: 1 1 38vh;
-  min-height: 220px;
+  flex: 0 0 auto;
+  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
+  border-radius: 0;
   z-index: 2;
 }
+.story-page .fox-stage::before { display: none; }
+.story-page .fox-stage .fox { width: auto; cursor: pointer; }
+/* Height-driven so the fox always fits its chapter; the viewBox keeps the
+   square aspect (width follows height). */
 .story-page .fox-stage svg {
   display: block;
-  width: min(64vh, 520px);
-  height: min(64vh, 520px);
+  width: auto;
+  height: clamp(190px, 32vh, 360px);
   filter: drop-shadow(0 18px 40px rgba(255, 77, 45, 0.18));
 }
-/* sleeping state */
-.story-page .fox--sleeping .fx-pupil { opacity: 0; transform: translateY(2px); }
+.story-page .chapter--hero .fox-stage svg { height: clamp(210px, 36vh, 400px); }
+/* Sleeping: hide the open eyes, show the closed-eye arcs + drifting z's. */
+.story-page .fox--sleeping .fx-eyes,
+.story-page .fox-stage.is-sleeping .fx-eyes { opacity: 0; }
+.story-page .fox--sleeping .fx-squint,
+.story-page .fox-stage.is-sleeping .fx-squint { opacity: 1; }
 .story-page .fox--sleeping .fx-head { transform: rotate(-4deg) translateY(3px); }
 .story-page .fox--sleeping .fx-ear { transform: rotate(-16deg); }
 .story-page .fox--sleeping .fx-tail { transform: rotate(6deg); }
-/* awake state */
-.story-page .fox--awake .fx-pupil { opacity: 1; transform: none; }
-.story-page .fox--awake .fx-head { transform: rotate(3deg) translateY(0); }
-.story-page .fox--awake .fx-ear { transform: rotate(16deg); }
+.story-page .fox-stage.is-sleeping::after {
+  content: "z  z";
+  position: absolute;
+  top: 2%;
+  right: 4%;
+  font: 700 20px/1 var(--font-display, Georgia, serif);
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: zdrift 3.4s ease-in-out infinite;
+}
+@keyframes zdrift {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(-10px); opacity: 0.95; }
+}
+
+/* Awake idle (chapters 2–5, and the hero once the stretch settles). */
+.story-page .fox--awake .fx-eyes,
+.story-page .fox-stage.is-awake .fx-eyes { animation: blink 6s ease-in-out infinite; }
 .story-page .fox--awake .fx-tail { animation: tailSway 6s ease-in-out infinite alternate; }
-/* chest rise, tail sway, blink while awake */
-.story-page .fox-scene .fx-body { animation: breath 5s ease-in-out infinite alternate; }
-.story-page .fox--awake .fx-eyebrow,
-.story-page .fox--awake .fx-squint { animation: blink 4.5s ease-in-out infinite; }
-.story-page .fox--awake .fx-eyebrow:nth-child(2),
-.story-page .fox--awake .fx-squint:nth-child(2) { animation-delay: 1.6s; }
-.story-page .fox--awake .fx-eyebrow:nth-child(3),
-.story-page .fox--awake .fx-squint:nth-child(3) { animation-delay: 3.2s; }
+.story-page .fox--awake .fx-body { animation: breath 5s ease-in-out infinite alternate; }
 /* pointing toward the next chapter */
 .story-page .fox--point .fx-head { transform: rotate(14deg) translateX(6px); animation: headBob 3s ease-in-out infinite; }
 .story-page .fox--point .fx-ear { animation: earPerk 3s ease-in-out infinite; }
@@ -241,14 +312,22 @@
   50% { transform: rotate(26deg); }
 }
 
-/* ---------- staggered reveals (text, cards, images) ---------- */
+/* ---------- staggered reveals (text, cards, images) ----------
+   The hidden state is gated on `html.js-fade`, which build.py's inline head
+   script adds before first paint. Without JS the class never appears, so the
+   story is always readable instead of a page of invisible text. */
 .story-page .reveal {
+  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  transition-delay: calc(var(--i, 0) * 90ms);
+}
+html.js-fade .story-page .reveal {
   opacity: 0;
   transform: translateY(18px);
-  transition: opacity var(--dur-slow) var(--ease-out), transform var(--dur-slow) var(--ease-out);
+  will-change: opacity, transform;
 }
-.story-page .reveal.is-visible,
-.story-page .reveal.enter {
+html.js-fade .story-page .reveal.in,
+html.js-fade .story-page .reveal.is-visible,
+html.js-fade .story-page .reveal.enter {
   opacity: 1;
   transform: none;
 }
@@ -259,6 +338,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
+  box-sizing: border-box;
   padding: 0.8rem 1.7rem;
   border-radius: 10px;
   font: 600 15px/1.2 "Public Sans", "Inter", sans-serif;
@@ -277,29 +357,68 @@
   filter: brightness(1.03);
   outline: none;
 }
+/* Icons inside the CTA and the chapter links must never stretch the flex row. */
+.story-page .lead-btn svg,
+.story-page .chapter-nav svg {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+}
+.story-page .lead-btn { white-space: nowrap; }
 
 /* ---------- marker dots (story progress) ---------- */
+/* Fixed progress spine: five dots that jump between chapters. It is the
+   home page's only chrome, so it stays put while the world scrolls. */
 .story-page .marker-track {
+  position: fixed;
+  left: 50%;
+  bottom: calc(0.9rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 45;
   display: flex;
   justify-content: center;
-  gap: 0.6rem;
-  padding: 1.2rem 1.5rem 1.6rem;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(18, 18, 21, 0.66);
+  border: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  flex-wrap: nowrap;
 }
+/* 32px hit area around a 9px visual dot: comfortable on touch. */
 .story-page .marker {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.story-page .marker::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.22);
   border: 1px solid var(--line);
-  cursor: pointer;
+  transform: translate(-50%, -50%);
   transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
 }
-.story-page .marker:hover { background: rgba(255, 255, 255, 0.32); transform: scale(1.2); }
-.story-page .marker.active { background: var(--cyan); border-color: var(--cyan); transform: scale(1.25); }
+.story-page .marker:hover::before { background: rgba(255, 255, 255, 0.38); transform: translate(-50%, -50%) scale(1.2); }
+.story-page .marker.active::before { background: var(--cyan); border-color: var(--cyan); transform: translate(-50%, -50%) scale(1.25); box-shadow: 0 0 12px var(--cyan-glow); }
+.story-page .marker:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 
-/* ---------- inner-page spine (back to story + continue) ---------- */
-.story-page .story-foot {
+/* ---------- inner-page spine (back to story + continue) ----------
+   Global (NOT scoped to .story-page): inner pages do not carry that class,
+   and this bar is their only navigation since the top bar is gone. */
+.story-foot {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -308,13 +427,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.75rem;
   padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
   background: linear-gradient(to top, rgba(18, 18, 21, 0.94), rgba(18, 18, 21, 0.74) 62%, transparent);
   color: var(--ink-soft);
   font: 600 12px/1.2 "Public Sans", "Inter", sans-serif;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
-.story-page .story-foot__link,
-.story-page .story-foot__next {
+.story-foot__link,
+.story-foot__next {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -324,15 +446,31 @@
   text-decoration: none;
   background: rgba(28, 28, 34, 0.55);
   border: 1px solid var(--line-strong);
-  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease,
+              border-color var(--dur-fast) ease, transform var(--dur-fast) ease;
 }
-.story-page .story-foot__link span,
-.story-page .story-foot__next span { text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; }
-.story-page .story-foot__link:hover,
-.story-page .story-foot__next:hover { background: rgba(28, 28, 34, 0.8); color: var(--ink); border-color: rgba(255, 255, 255, 0.3); transform: translateY(-1px); }
-.story-page .story-foot__next { justify-content: flex-end; color: var(--cyan); border-color: rgba(0, 229, 160, 0.35); }
-.story-page .story-foot__next:hover { background: rgba(0, 229, 160, 0.14); border-color: rgba(0, 229, 160, 0.6); }
-.story-page .story-foot__icon { flex: 0 0 auto; width: 16px; height: 16px; }
+.story-foot__link span,
+.story-foot__next span { text-transform: uppercase; letter-spacing: 0.14em; font-size: 11px; }
+.story-foot__link:hover,
+.story-foot__next:hover {
+  background: rgba(28, 28, 34, 0.8);
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+.story-foot__next { justify-content: flex-end; color: var(--cyan); border-color: rgba(0, 229, 160, 0.35); }
+.story-foot__next:hover { background: rgba(0, 229, 160, 0.14); border-color: rgba(0, 229, 160, 0.6); }
+.story-foot__fox { flex: 0 0 auto; width: 22px; height: 22px; }
+.story-foot__next svg { width: 16px; height: 16px; flex: 0 0 auto; }
+
+/* leave room for the fixed spine */
+body.has-story-foot main#main { padding-bottom: 96px; }
+
+/* On the story page the fixed marker dock is the persistent nav: keep it
+   clear of the footer links when the story ends. Inner pages get the same
+   treatment for the fixed story spine. */
+body:has(.story-page) .footer,
+body.has-story-foot .footer { padding-bottom: calc(1.5rem + 62px); }
 
 /* ---------- skip link ---------- */
 .story-page .skip-link {
@@ -350,26 +488,51 @@
 
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
+  .story-page { scroll-behavior: auto; }
   .story-page .reveal,
   .story-page .scene::after { animation: none !important; transition: none !important; }
+  html.js-fade .story-page .reveal { opacity: 1; transform: none; }
   .story-page .fox--sleeping .fx-pupil,
   .story-page .fox--awake .fx-pupil { opacity: 1 !important; }
   .story-page .fox--sleeping .fx-ear,
   .story-page .fox--awake .fx-ear { transform: none !important; }
-  .story-page .story-foot,
-  .story-page .fox-trail { display: none; }
+  .story-page .fox-stage.is-sleeping::after { display: none; }
+  /* No pinned scrub with reduced motion: the hero reads as one static frame. */
+  .story-page .chapter--hero { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4vh 1.2rem calc(5.5rem + env(safe-area-inset-bottom)); }
+  .story-page .hero-pin { position: static; min-height: 0; padding: 0; }
+  /* the spine must stay visible: it is the only navigation on inner pages */
+  .story-foot { -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
 /* ---------- responsive ---------- */
 @media (max-width: 640px) {
-  .story-page .chapter { min-height: 92vh; padding: 4vh 4vw 30vh; }
-  .story-page .chapter-head { padding: 1.2rem 1rem 0.6rem; }
-  .story-page .fox-stage svg { width: min(52vh, 420px); height: min(52vh, 420px); }
-  .story-page .chapter-nav { justify-content: center; }
+  .story-page .chapter:not(.chapter--hero) { min-height: 100svh; padding: 3vh 5vw calc(6rem + env(safe-area-inset-bottom)); }
+  .story-page .chapter--hero { min-height: 170svh; padding: 0; }
+  .story-page .hero-pin { min-height: 100svh; padding: 3vh 5vw calc(6rem + env(safe-area-inset-bottom)); }
+  .story-page .chapter-head { padding: 1rem 0.5rem 0.6rem; }
+  .story-page .chapter-head h1,
+  .story-page .chapter-head .chapter-title { font-size: clamp(34px, 11vw, 56px); }
+  .story-page .fox-stage svg { height: clamp(170px, 30vh, 300px); }
+  .story-page .chapter--hero .fox-stage svg { height: clamp(190px, 34vh, 330px); }
+  .story-page .chapter-nav { justify-content: center; gap: 0.6rem; }
   .story-page .lead-btn { width: 100%; justify-content: center; }
-  .story-page .marker-track { padding: 0.8rem 1rem 1.2rem; }
-  .story-page .story-foot { padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom)); }
-  .story-page .story-foot__link,
-  .story-page .story-foot__next { padding: 0.4rem 0.7rem; }
-  .story-page .story-foot__icon { width: 14px; height: 14px; }
+  .story-page .marker-track { padding: 0.2rem 0.4rem; }
+  .story-foot { padding: 0.6rem 0.75rem calc(0.6rem + env(safe-area-inset-bottom)); }
+  .story-foot__link,
+  .story-foot__next { padding: 0.4rem 0.7rem; }
+  .story-foot__link span,
+  .story-foot__next span { font-size: 10px; letter-spacing: 0.1em; }
+  .story-foot__fox { width: 18px; height: 18px; }
+  body.has-story-foot main#main { padding-bottom: 84px; }
+}
+
+/* ---------- scene hover + page transitions (global) ---------- */
+.story-page .scene::after { transition: opacity 0.7s ease; }
+.story-page .chapter:hover .scene::after { opacity: 0.46; }
+
+/* Enter: build.py adds html.js-fade + html.page-ready.
+   Exit: transitions.js adds html.page-leaving just before navigating. */
+html.page-leaving body { opacity: 0 !important; transition: opacity 0.22s ease !important; }
+@media (prefers-reduced-motion: reduce) {
+  html.page-leaving body { transition: none !important; }
 }

@@ -9,13 +9,14 @@
   <meta property="og:description" content="Grimoire: Astral Architect (In development) by Grims Studio: Cozy base-builder / idle RPG with gesture-based spell casting, familiar bonding, and alchemical crafting. 100% offline game built with .NET " />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="./og-preview.png" />
-  <style>body{opacity:0;transition:opacity .34s ease}</style>
-  <link rel="stylesheet" href="./story.css" />
+  <style>html.js-fade body{opacity:0}html.js-fade.page-ready body{opacity:1;transition:opacity .34s ease}</style>
+  <script>document.documentElement.classList.add('js-fade');setTimeout(function(){document.documentElement.classList.add('page-ready')},1600);</script>
   <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./story.css" />
   <link rel="icon" href="./grims-mark.svg" type="image/svg+xml" />
   <link rel="canonical" href="https://jaredselasiegallant-sudo.github.io/Grims-studio/app-grimoire-astral-architect.html" />
 </head>
-<body>
+<body class="has-story-foot">
   <a class="skip-link" href="#main">Skip to content</a>
 
   <main id="main">
@@ -159,7 +160,7 @@
       <span class="quiet" style="margin-left:auto">© 2026 Grims Studio · Static site</span>
     </div>
   </footer>
-  <script src="././transitions.js" defer></script>
+  <script src="./transitions.js" defer></script>
 
 </body>
 </html>
