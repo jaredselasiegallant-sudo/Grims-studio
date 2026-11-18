@@ -71,7 +71,7 @@ body {
   position: fixed; z-index: 0; pointer-events: none;
   border-radius: 50%; transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(255,77,45,0.16), transparent 55%);
-  opacity: 0; transition: opacity var(--dur-fast);
+  opacity: 1; transition: opacity var(--dur-fast);
 }
 .mouse-glow::after {
   content: ""; position: absolute; inset: -40%;
